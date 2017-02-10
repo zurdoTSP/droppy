@@ -23,7 +23,7 @@ class DropObj(object):
 		self.flow = dropbox.client.DropboxOAuth2FlowNoRedirect(self.app_key, self.app_secret)
 		self.authorize_url= self.flow.start()
 		self.client = None
- #V6rPWlcOs5sAAAAAAACXUtecuxDNv6vAceKjqGoNnVfBNhKkwGpdcfWtPa6k0b_X
+
 
 	#----------------------------------------------------------------------
 	def nuevoToken(self,code):

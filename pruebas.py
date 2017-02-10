@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
-import ctypes #GetSystemMetrics
+import ctypes 
 import completo
 import os.path
 #Clase heredada de QMainWindow (Constructor de ventanas)

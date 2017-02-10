@@ -1,7 +1,7 @@
 import hijo
 class ficheros:
 	def __init__(self):
-		self.directorios=[]   # instance variable unique to each instance
+		self.directorios=[]   
 		self.secundarios=[]
 
 	def setNDir(self,dir):
