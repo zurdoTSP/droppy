@@ -17,8 +17,8 @@ class DropObj(object):
 		self.base_path = os.path.dirname(os.path.abspath(__file__))
 		self.filename = filename
 		self.path= path
-		self.app_key= 'wgc9jk089m26mvy'
-		self.app_secret= '4z25ev9bejzz0ae'
+		self.app_key= 'wemujp1ue1ljmui'
+		self.app_secret= 'xny3h4yajvwkcb6'
 		self.app_type = 'app_folder'
 		self.flow = dropbox.client.DropboxOAuth2FlowNoRedirect(self.app_key, self.app_secret)
 		self.authorize_url= self.flow.start()
