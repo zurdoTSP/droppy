@@ -1,0 +1,5 @@
+sudo apt-get install python3-pip
+
+Works great. Tried
+
+sudo pip3 install PyQt5
