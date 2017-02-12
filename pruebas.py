@@ -12,7 +12,6 @@ import os.path
   #Asignar estilos CSS
   #self.setStyleSheet("background-color: #000; color: #fff;")
 
-
 class MainWindow(QMainWindow):
  #Método constructor de la clase
 	def __init__(self,dr):
@@ -20,21 +19,28 @@ class MainWindow(QMainWindow):
 		QMainWindow.__init__(self)
   #Cargar la configuración del archivo .ui en el objeto
 		uic.loadUi("mainwindow2.ui", self)
+		iconCar=QIcon('New-Folder-icon.png')
+		iconFil=QIcon('nfile.png')
 		self.drop = dr
 		self.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
 		self.treeWidget.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
+		self.nCarpeta.clicked.connect(self.crearFolder)
+		self.treeWidget.itemDoubleClicked.connect(self.openElement)
 		self.formar()
+		self.nCarpeta.setText("")
+		self.nCarpeta.setIcon(iconCar)
+		self.nFile.setIcon(iconFil)
 
 	def formar(self):
 
 		t=self.drop.listarCarpetas()
-
 		t2=t.getDirectorios()
 		hijos=t.getHijos()
-		header=QTreeWidgetItem(["Tree"])
+		header=QTreeWidgetItem(["Droppy"])
 		#header.setBackgroundColor(0, QtGui.QColor('green'))
 		icon=QIcon('home-icon.png')
 		icon2=QIcon('text-plain-icon.png')
+
 		self.treeWidget.setHeaderItem(header)   #Another alternative is setHeaderLabels(["Tree","First",...])
 		root = QTreeWidgetItem(self.treeWidget, ["dropbox"])
 		for i in range(len(t2)):
@@ -49,6 +55,23 @@ class MainWindow(QMainWindow):
 					q.append(hijos[j].getNombre())
 					barA = QTreeWidgetItem(A,q)
 					barA.setIcon(0,icon2)
+
+	def crearFolder(self):
+		value,crear= QInputDialog.getText(self, "crear archivo", "Nombre del archivo nuevo:")
+		if crear and value!='':
+			print('Nombre:', value)
+			self.drop.crearCarpeta(value)
+			self.treeWidget.clear()
+			self.formar()
+
+	def openElement(self):
+		item = self.treeWidget.currentItem()
+		y=item.parent()
+		y=y.text(0)
+		n=item.text(0)
+		final=y+"/"+n
+		self.directorio.setText(self.drop.abrirFichero(final).decode('UTF-8'))
+		
 
 """
 

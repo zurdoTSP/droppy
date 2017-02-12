@@ -81,6 +81,11 @@ class DropObj(object):
 		return self.client.account_info()
 
 	#----------------------------------------------------------------------
+	def crearCarpeta(self,carpeta):
+
+		self.client.file_create_folder('/'+carpeta)
+
+	#----------------------------------------------------------------------
 
 	def upload_file(self,ruta="/"):
 		"""
@@ -110,7 +115,13 @@ class DropObj(object):
 					print("\t"+bcolors.morado+x2['path']+bcolors.ENDC)
 		return a
 	#----------------------------------------------------------------------
-
+	def abrirFichero(self,fich):
+		f, metadata = self.client.get_file_and_metadata(fich)#abrimos el fichero con el que vamos a trabajar
+		x=f.read()
+		
+		f.close()
+		return x
+	#----------------------------------------------------------------------
 #if __name__ == "__main__":
 #	drop = DropObj("config.ini")
 #	drop.listarCarpetas()
