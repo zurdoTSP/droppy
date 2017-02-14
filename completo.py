@@ -122,6 +122,9 @@ class DropObj(object):
 		f.close()
 		return x
 	#----------------------------------------------------------------------
+	def archivoMod(self):
+		respuesta = self.client.put_file("/texto.txt", "funciona",1)
+	#----------------------------------------------------------------------
 #if __name__ == "__main__":
 #	drop = DropObj("config.ini")
 #	drop.listarCarpetas()

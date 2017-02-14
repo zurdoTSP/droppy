@@ -27,9 +27,11 @@ class MainWindow(QMainWindow):
 		self.nCarpeta.clicked.connect(self.crearFolder)
 		self.treeWidget.itemDoubleClicked.connect(self.openElement)
 		self.formar()
+		self.dirCrear=""
 		self.nCarpeta.setText("")
 		self.nCarpeta.setIcon(iconCar)
 		self.nFile.setIcon(iconFil)
+		self.nFile.clicked.connect(self.crearFich)
 
 	def formar(self):
 
@@ -64,13 +66,21 @@ class MainWindow(QMainWindow):
 			self.treeWidget.clear()
 			self.formar()
 
+	def crearFich(self):
+		self.drop.archivoMod()
+		print("mierda")
+
 	def openElement(self):
 		item = self.treeWidget.currentItem()
 		y=item.parent()
 		y=y.text(0)
 		n=item.text(0)
 		final=y+"/"+n
-		self.directorio.setText(self.drop.abrirFichero(final).decode('UTF-8'))
+		if(y=="dropbox"):
+			print("ruta establecida")
+			self.dirCrear=y
+		else:
+			self.directorio.setText(self.drop.abrirFichero(final).decode('UTF-8'))
 		
 
 """
