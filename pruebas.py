@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from PyQt5.QtGui import *
+from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 import ctypes 
 import completo
@@ -22,10 +23,13 @@ class MainWindow(QMainWindow):
 		iconCar=QIcon('New-Folder-icon.png')
 		iconFil=QIcon('nfile.png')
 		iconSa=QIcon('save-icon.png')
+		iconN=QIcon('bold.png')
 		self.drop = dr
 		self.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
 		self.treeWidget.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
 		self.nCarpeta.clicked.connect(self.crearFolder)
+		self.saves.clicked.connect(self.save)
+		self.negrita.clicked.connect(self.bold)
 		self.treeWidget.itemDoubleClicked.connect(self.openElement)
 		self.formar()
 		self.dirCrear=""
@@ -33,6 +37,7 @@ class MainWindow(QMainWindow):
 		self.nCarpeta.setIcon(iconCar)
 		self.nFile.setIcon(iconFil)
 		self.saves.setIcon(iconSa)
+		self.negrita.setIcon(iconN)
 		self.nFile.clicked.connect(self.crearFich)
 
 	def formar(self):
@@ -91,6 +96,32 @@ class MainWindow(QMainWindow):
 			self.dirCrear=n
 		else:
 			self.directorio.setText(self.drop.abrirFichero(final).decode('UTF-8'))
+	def save(self):
+
+        # Only open dialog if there is no filename yet
+        #PYQT5 Returns a tuple in PyQt5, we only need the filename
+		
+		filename = QFileDialog.getSaveFileName(self, 'Save File')[0]
+
+		if filename:
+
+            # Append extension if not there yet
+			if not filename.endswith(".writer"):
+				filename += ".writer"
+
+            # We just store the contents of the text file along with the
+            # format in html, which Qt does in a very nice way for us
+			with open(filename,"wt") as file:
+          		      file.write(self.directorio.toHtml())
+	def bold(self):
+
+		if self.directorio.fontWeight() == QtGui.QFont.Bold:
+
+			self.directorio.setFontWeight(QtGui.QFont.Normal)
+
+		else:
+
+			self.directorio.setFontWeight(QtGui.QFont.Bold)
 		
 
 """
