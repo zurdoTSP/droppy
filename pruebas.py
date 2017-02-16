@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
 		uic.loadUi("mainwindow2.ui", self)
 		iconCar=QIcon('New-Folder-icon.png')
 		iconFil=QIcon('nfile.png')
+		iconSa=QIcon('save-icon.png')
 		self.drop = dr
 		self.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
 		self.treeWidget.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
@@ -31,6 +32,7 @@ class MainWindow(QMainWindow):
 		self.nCarpeta.setText("")
 		self.nCarpeta.setIcon(iconCar)
 		self.nFile.setIcon(iconFil)
+		self.saves.setIcon(iconSa)
 		self.nFile.clicked.connect(self.crearFich)
 
 	def formar(self):
@@ -59,7 +61,7 @@ class MainWindow(QMainWindow):
 					barA.setIcon(0,icon2)
 
 	def crearFolder(self):
-		value,crear= QInputDialog.getText(self, "crear archivo", "Nombre del archivo nuevo:")
+		value,crear= QInputDialog.getText(self, "crear archivo", "Nombre de la nueva carpeta:")
 		if crear and value!='':
 			print('Nombre:', value)
 			self.drop.crearCarpeta(value)
@@ -67,8 +69,16 @@ class MainWindow(QMainWindow):
 			self.formar()
 
 	def crearFich(self):
-		self.drop.archivoMod()
-		print("mierda")
+		if(self.dirCrear!=""):
+			value,crear= QInputDialog.getText(self, "crear archivo", "Nombre del nuevo fichero:")
+			if crear and value!='':
+				self.drop.archivoMod(value,self.dirCrear)
+				self.treeWidget.clear()
+				self.formar()
+		else:
+			print("debes establecer la ruta")
+			QMessageBox.warning(self, "WARNING", "Debes establecer una ruta para poder crear un fichero")
+		
 
 	def openElement(self):
 		item = self.treeWidget.currentItem()
@@ -77,8 +87,8 @@ class MainWindow(QMainWindow):
 		n=item.text(0)
 		final=y+"/"+n
 		if(y=="dropbox"):
-			print("ruta establecida")
-			self.dirCrear=y
+			print("ruta establecida ",n)
+			self.dirCrear=n
 		else:
 			self.directorio.setText(self.drop.abrirFichero(final).decode('UTF-8'))
 		
