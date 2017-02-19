@@ -23,6 +23,7 @@ class MainWindow(QMainWindow):
 		iconCar=QIcon('New-Folder-icon.png')
 		iconFil=QIcon('nfile.png')
 		iconSa=QIcon('save-icon.png')
+		iconL=QIcon('lista-icon.png')
 		iconN=QIcon('bold.png')
 		self.drop = dr
 		self.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
@@ -30,6 +31,7 @@ class MainWindow(QMainWindow):
 		self.nCarpeta.clicked.connect(self.crearFolder)
 		self.saves.clicked.connect(self.save)
 		self.negrita.clicked.connect(self.bold)
+		self.listaB.clicked.connect(self.lista)
 		self.treeWidget.itemDoubleClicked.connect(self.openElement)
 		self.formar()
 		self.dirCrear=""
@@ -37,8 +39,14 @@ class MainWindow(QMainWindow):
 		self.nCarpeta.setIcon(iconCar)
 		self.nFile.setIcon(iconFil)
 		self.saves.setIcon(iconSa)
+		self.abierto=""
 		self.negrita.setIcon(iconN)
+		self.listaB.setIcon(iconL)
+		self.negrita.setToolTip('This is an example button')
 		self.nFile.clicked.connect(self.crearFich)
+		QShortcut(QtGui.QKeySequence("Ctrl+B"), self, self.bold)
+		QShortcut(QtGui.QKeySequence("Ctrl+L"), self, self.lista)
+		
 
 	def formar(self):
 
@@ -46,11 +54,10 @@ class MainWindow(QMainWindow):
 		t2=t.getDirectorios()
 		hijos=t.getHijos()
 		header=QTreeWidgetItem(["Droppy"])
-		#header.setBackgroundColor(0, QtGui.QColor('green'))
 		icon=QIcon('home-icon.png')
 		icon2=QIcon('text-plain-icon.png')
 
-		self.treeWidget.setHeaderItem(header)   #Another alternative is setHeaderLabels(["Tree","First",...])
+		self.treeWidget.setHeaderItem(header) 
 		root = QTreeWidgetItem(self.treeWidget, ["dropbox"])
 		for i in range(len(t2)):
 			q=[]
@@ -58,7 +65,6 @@ class MainWindow(QMainWindow):
 			A = QTreeWidgetItem(root,q)
 			A.setIcon(0,icon)
 			for j in range(len(hijos)):
-				#print(hijos[j].getNombre())
 				if ("/"+hijos[j].getPadre())==t2[i]:
 					q=[]
 					q.append(hijos[j].getNombre())
@@ -77,6 +83,8 @@ class MainWindow(QMainWindow):
 		if(self.dirCrear!=""):
 			value,crear= QInputDialog.getText(self, "crear archivo", "Nombre del nuevo fichero:")
 			if crear and value!='':
+				if not value.endswith(".writer"):
+					value=value+".writer"
 				self.drop.archivoMod(value,self.dirCrear)
 				self.treeWidget.clear()
 				self.formar()
@@ -95,34 +103,35 @@ class MainWindow(QMainWindow):
 			print("ruta establecida ",n)
 			self.dirCrear=n
 		else:
-			self.directorio.setText(self.drop.abrirFichero(final).decode('UTF-8'))
+			self.abierto=final
+			x=str(self.drop.abrirFichero(final),'cp1252')
+			print(type(x))
+			#self.directorio.setText(self.drop.abrirFichero(final).decode('UTF-8'))
+			self.directorio.setText(x)
 	def save(self):
-
-        # Only open dialog if there is no filename yet
-        #PYQT5 Returns a tuple in PyQt5, we only need the filename
-		
+		self.drop.saveF(self.directorio.toHtml(),self.abierto)
+		"""
 		filename = QFileDialog.getSaveFileName(self, 'Save File')[0]
 
 		if filename:
-
-            # Append extension if not there yet
 			if not filename.endswith(".writer"):
 				filename += ".writer"
 
-            # We just store the contents of the text file along with the
-            # format in html, which Qt does in a very nice way for us
+
 			with open(filename,"wt") as file:
-          		      file.write(self.directorio.toHtml())
+		"""
+          		     # file.write(self.directorio.toHtml())
+			
 	def bold(self):
 
 		if self.directorio.fontWeight() == QtGui.QFont.Bold:
-
 			self.directorio.setFontWeight(QtGui.QFont.Normal)
-
 		else:
-
 			self.directorio.setFontWeight(QtGui.QFont.Bold)
-		
+
+	def lista(self):
+		cursor = self.directorio.textCursor()
+		cursor.insertList(QtGui.QTextListFormat.ListDisc)
 
 """
 

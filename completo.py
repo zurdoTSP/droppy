@@ -116,7 +116,7 @@ class DropObj(object):
 		return a
 	#----------------------------------------------------------------------
 	def abrirFichero(self,fich):
-		f, metadata = self.client.get_file_and_metadata(fich)#abrimos el fichero con el que vamos a trabajar
+		f = self.client.get_file(fich)#abrimos el fichero con el que vamos a trabajar
 		x=f.read()
 		
 		f.close()
@@ -124,6 +124,9 @@ class DropObj(object):
 	#----------------------------------------------------------------------
 	def archivoMod(self,nomb,dir):
 		respuesta = self.client.put_file(dir+"/"+nomb, "",1)
+	#----------------------------------------------------------------------
+	def saveF(self,contenido,dir):
+		respuesta = self.client.put_file(dir, contenido,1)
 	#----------------------------------------------------------------------
 #if __name__ == "__main__":
 #	drop = DropObj("config.ini")
