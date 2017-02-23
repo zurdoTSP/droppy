@@ -42,8 +42,8 @@ class MainWindow(QMainWindow):
 
 		self.systray.show()
 		self.setWindowIcon(iconApp) 
-		self.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
-		self.treeWidget.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
+		#self.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
+		#self.treeWidget.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
 		self.nCarpeta.clicked.connect(self.crearFolder)
 		self.saves.clicked.connect(self.save)
 		self.negrita.clicked.connect(self.bold)

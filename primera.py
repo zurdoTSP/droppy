@@ -21,9 +21,9 @@ class Ventana(QMainWindow):
 		QMainWindow.__init__(self)
   #Cargar la configuración del archivo .ui en el objeto
 		uic.loadUi("mainwindow.ui", self)
-		self.setStyleSheet("background-color:#0099FF; color: #fff;font-size:Bold")
-		self.dir.setStyleSheet("background-color:#1aa3ff;font-size: bold")
-		self.recipiente.setStyleSheet("background-color:#1aa3ff;font-size: Bold")
+		#self.setStyleSheet("background-color:#0099FF; color: #fff;font-size:Bold")
+		#self.dir.setStyleSheet("background-color:#1aa3ff;font-size: bold")
+		#self.recipiente.setStyleSheet("background-color:#1aa3ff;font-size: Bold")
 		self.setWindowTitle("Cambiando el título de la ventana")
 		self.drop = completo.DropObj("colores.py")
 		qfont = QFont("Arial", 12, QFont.Bold)
