@@ -7,6 +7,7 @@ from PyQt5.QtCore import Qt
 import ctypes 
 import completo
 import os.path
+import AESCipher
 #Clase heredada de QMainWindow (Constructor de ventanas)
 
 
@@ -27,6 +28,7 @@ class MainWindow(QMainWindow):
 		iconN=QIcon('bold.png')
 		iconApp=QIcon('app.png')
 		self.drop = dr
+		self.clave=AESCipher.AESCipher()
 		self.systray = QSystemTrayIcon(iconApp, self)
 		show_action = QAction("Show", self)
 		quit_action = QAction("Exit", self)
@@ -42,8 +44,10 @@ class MainWindow(QMainWindow):
 
 		self.systray.show()
 		self.setWindowIcon(iconApp) 
-		#self.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
-		#self.treeWidget.setStyleSheet("background-color:#0099FF; color: #fff;font-size:bold")
+		#self.setStyleSheet("background-color:#000000; color:#3ADF00;font-size:bold")
+		#self.treeWidget.setStyleSheet("background-color:#000000; color:#3ADF00;font-size:bold")
+		#self.treeWidget.setStyleSheet("background-color:#000000; color:#3ADF00;font-size:bold")
+
 		self.nCarpeta.clicked.connect(self.crearFolder)
 		self.saves.clicked.connect(self.save)
 		self.negrita.clicked.connect(self.bold)
@@ -125,7 +129,17 @@ class MainWindow(QMainWindow):
 			#self.directorio.setText(self.drop.abrirFichero(final).decode('UTF-8'))
 			self.directorio.setText(x)
 	def save(self):
-		self.drop.saveF(self.directorio.toHtml(),self.abierto)
+		if self.encrip.isChecked():
+			value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:")
+			if crear and value!='':
+				if not self.abierto.endswith(".enc"):
+					
+					self.drop.saveF(self.clave.encrypt(self.directorio.toHtml(),value),self.abierto+".enc")
+				else:
+					self.drop.saveF(self.clave.encrypt(self.directorio.toHtml(),value),self.abierto)
+				
+		else:
+			self.drop.saveF(self.directorio.toHtml(),self.abierto)
 		"""
 		filename = QFileDialog.getSaveFileName(self, 'Save File')[0]
 
