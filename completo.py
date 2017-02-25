@@ -128,6 +128,9 @@ class DropObj(object):
 	def saveF(self,contenido,dir):
 		respuesta = self.client.put_file(dir, contenido,1)
 	#----------------------------------------------------------------------
+	def borrarF(self,dir):
+		respuesta = self.client.file_delete(dir)
+	#----------------------------------------------------------------------
 #if __name__ == "__main__":
 #	drop = DropObj("config.ini")
 #	drop.listarCarpetas()

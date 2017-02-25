@@ -141,6 +141,9 @@ class MainWindow(QMainWindow):
 			if crear and value!='':
 				if not self.abierto.endswith(".enc"):
 					self.drop.saveF(self.clave.encrypt(self.directorio.toHtml(),value),self.abierto+".enc")
+					self.drop.borrarF(self.abierto)
+					self.treeWidget.clear()
+					self.formar()
 				else:
 					self.drop.saveF(self.clave.encrypt(self.directorio.toHtml(),value),self.abierto)
 				
