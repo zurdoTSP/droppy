@@ -124,16 +124,22 @@ class MainWindow(QMainWindow):
 			self.dirCrear=n
 		else:
 			self.abierto=final
-			x=str(self.drop.abrirFichero(final),'cp1252')
-			print(type(x))
+			if  final.endswith(".enc"):
+				value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:")
+				if crear and value!='':
+					x=self.drop.abrirFichero(final)
+					t=str(self.clave.decrypt(x,value),'cp1252')
+					self.directorio.setText(t)
+			else:
+				x=str(self.drop.abrirFichero(final),'cp1252')
+				print(type(x))
 			#self.directorio.setText(self.drop.abrirFichero(final).decode('UTF-8'))
-			self.directorio.setText(x)
+				self.directorio.setText(x)
 	def save(self):
 		if self.encrip.isChecked():
 			value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:")
 			if crear and value!='':
 				if not self.abierto.endswith(".enc"):
-					
 					self.drop.saveF(self.clave.encrypt(self.directorio.toHtml(),value),self.abierto+".enc")
 				else:
 					self.drop.saveF(self.clave.encrypt(self.directorio.toHtml(),value),self.abierto)
