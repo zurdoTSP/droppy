@@ -54,6 +54,7 @@ class MainWindow(QMainWindow):
 		self.listaB.clicked.connect(self.lista)
 		self.treeWidget.itemDoubleClicked.connect(self.openElement)
 		self.formar()
+		self.treeWidget.expandToDepth(0)
 		self.dirCrear=""
 		self.nCarpeta.setText("")
 		self.nCarpeta.setIcon(iconCar)
@@ -98,6 +99,7 @@ class MainWindow(QMainWindow):
 			self.drop.crearCarpeta(value)
 			self.treeWidget.clear()
 			self.formar()
+			self.treeWidget.expandToDepth(0)
 
 	def crearFich(self):
 		if(self.dirCrear!=""):
@@ -108,6 +110,7 @@ class MainWindow(QMainWindow):
 				self.drop.archivoMod(value,self.dirCrear)
 				self.treeWidget.clear()
 				self.formar()
+				self.treeWidget.expandToDepth(0)
 		else:
 			print("debes establecer la ruta")
 			QMessageBox.warning(self, "WARNING", "Debes establecer una ruta para poder crear un fichero")
@@ -144,6 +147,7 @@ class MainWindow(QMainWindow):
 					self.drop.borrarF(self.abierto)
 					self.treeWidget.clear()
 					self.formar()
+					self.treeWidget.expandToDepth(0)
 				else:
 					self.drop.saveF(self.clave.encrypt(self.directorio.toHtml(),value),self.abierto)
 				
