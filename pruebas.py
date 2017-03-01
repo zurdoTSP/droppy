@@ -27,6 +27,7 @@ class MainWindow(QMainWindow):
 		iconL=QIcon('lista-icon.png')
 		iconN=QIcon('bold.png')
 		iconApp=QIcon('app.png')
+		iconSub=QIcon('underline.png')
 		self.drop = dr
 		self.clave=AESCipher.AESCipher()
 		self.systray = QSystemTrayIcon(iconApp, self)
@@ -52,6 +53,7 @@ class MainWindow(QMainWindow):
 		self.saves.clicked.connect(self.save)
 		self.negrita.clicked.connect(self.bold)
 		self.listaB.clicked.connect(self.lista)
+		self.subButton.clicked.connect(self.subra)
 		self.treeWidget.itemDoubleClicked.connect(self.openElement)
 		self.formar()
 		self.treeWidget.expandToDepth(0)
@@ -63,10 +65,13 @@ class MainWindow(QMainWindow):
 		self.abierto=""
 		self.negrita.setIcon(iconN)
 		self.listaB.setIcon(iconL)
+		self.subButton.setIcon(iconSub)
 		self.negrita.setToolTip('This is an example button')
 		self.nFile.clicked.connect(self.crearFich)
 		QShortcut(QtGui.QKeySequence("Ctrl+B"), self, self.bold)
 		QShortcut(QtGui.QKeySequence("Ctrl+L"), self, self.lista)
+		QShortcut(QtGui.QKeySequence("Ctrl+U"), self, self.subra)
+		QShortcut(QtGui.QKeySequence("Ctrl+S"), self, self.save)
 		
 
 	def formar(self):
@@ -131,7 +136,7 @@ class MainWindow(QMainWindow):
 				value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:")
 				if crear and value!='':
 					x=self.drop.abrirFichero(final)
-					t=str(self.clave.decrypt(x,value),'cp1252')
+					t=str(self.clave.decrypt(value,x),'cp1252')
 					self.directorio.setText(t)
 			else:
 				x=str(self.drop.abrirFichero(final),'cp1252')
@@ -139,31 +144,23 @@ class MainWindow(QMainWindow):
 			#self.directorio.setText(self.drop.abrirFichero(final).decode('UTF-8'))
 				self.directorio.setText(x)
 	def save(self):
-		if self.encrip.isChecked():
-			value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:")
-			if crear and value!='':
-				if not self.abierto.endswith(".enc"):
-					self.drop.saveF(self.clave.encrypt(self.directorio.toHtml(),value),self.abierto+".enc")
-					self.drop.borrarF(self.abierto)
-					self.treeWidget.clear()
-					self.formar()
-					self.treeWidget.expandToDepth(0)
-				else:
-					self.drop.saveF(self.clave.encrypt(self.directorio.toHtml(),value),self.abierto)
+		if(self.abierto!=""):
+			if self.encrip.isChecked():
+				value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:")
+				if crear and value!='':
+					if not self.abierto.endswith(".enc"):
+						self.drop.saveF(self.clave.encrypt(value,self.directorio.toHtml()),self.abierto+".enc")
+						self.drop.borrarF(self.abierto)
+						self.treeWidget.clear()
+						self.formar()
+						self.treeWidget.expandToDepth(0)
+					else:
+						self.drop.saveF(self.clave.encrypt(value,self.directorio.toHtml()),self.abierto)
 				
+			else:
+				self.drop.saveF(self.directorio.toHtml(),self.abierto)
 		else:
-			self.drop.saveF(self.directorio.toHtml(),self.abierto)
-		"""
-		filename = QFileDialog.getSaveFileName(self, 'Save File')[0]
-
-		if filename:
-			if not filename.endswith(".writer"):
-				filename += ".writer"
-
-
-			with open(filename,"wt") as file:
-		"""
-          		     # file.write(self.directorio.toHtml())
+			QMessageBox.warning(self, "WARNING", "Debes trabajar con un fichero antes de guardarlo")
 			
 	def bold(self):
 
@@ -176,6 +173,11 @@ class MainWindow(QMainWindow):
 		cursor = self.directorio.textCursor()
 		cursor.insertList(QtGui.QTextListFormat.ListDisc)
 
+	def subra(self):
+
+		state = self.directorio.fontUnderline()
+
+		self.directorio.setFontUnderline(not state)
 """
 
 barA = QTreeWidgetItem(A, ["bar", "i"])
