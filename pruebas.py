@@ -72,6 +72,7 @@ class MainWindow(QMainWindow):
 		QShortcut(QtGui.QKeySequence("Ctrl+L"), self, self.lista)
 		QShortcut(QtGui.QKeySequence("Ctrl+U"), self, self.subra)
 		QShortcut(QtGui.QKeySequence("Ctrl+S"), self, self.save)
+		QShortcut(QtGui.QKeySequence("Ctrl+T"), self, self.titulo)
 		
 
 	def formar(self):
@@ -178,6 +179,14 @@ class MainWindow(QMainWindow):
 		state = self.directorio.fontUnderline()
 
 		self.directorio.setFontUnderline(not state)
+
+
+	def titulo(self):
+		cursor=self.directorio.textCursor()
+		textSelected = cursor.selectedText()
+		self.directorio.insertHtml("<h1>"+textSelected+"</h1>")
+		self.directorio.insertHtml("<h2>"+textSelected+"</h2>")
+		self.directorio.insertHtml("<h3>"+textSelected+"</h3>")
 """
 
 barA = QTreeWidgetItem(A, ["bar", "i"])
