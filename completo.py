@@ -3,7 +3,7 @@ import os
 import sys
 import webbrowser
 from colores import bcolors
-import ficheros
+import padre
 ########################################################################
 class DropObj(object):
 	"""
@@ -28,7 +28,7 @@ class DropObj(object):
 	#----------------------------------------------------------------------
 	def nuevoToken(self,code):
 		"""
-		Connect and authenticate with dropbox
+		Guardamos el valor de nuestro identificador de dropbox.
 		"""
 		self.access_token, user_id = self.flow.finish(code)
 		self.client = dropbox.client.DropboxClient(self.access_token)
@@ -39,7 +39,7 @@ class DropObj(object):
 	#----------------------------------------------------------------------
 	def autoiden(self):
 		"""
-		Connect and authenticate with dropbox
+		Cogemos el token del fichero y lo validamos.
 		"""
 		infile = open('.token.txt', 'r')
 		x=infile.read()
@@ -82,6 +82,13 @@ class DropObj(object):
 
 	#----------------------------------------------------------------------
 	def crearCarpeta(self,carpeta):
+		"""
+		Función que crea una carpeta en dropbox
+
+		Parámetros:
+		carpeta -- nombre de la carpeta que será creada.
+		
+		"""
 
 		self.client.file_create_folder('/'+carpeta)
 
@@ -89,7 +96,7 @@ class DropObj(object):
 
 	def upload_file(self,ruta="/"):
 		"""
-		Subida de fichero a dropbox con ruta opcional
+		Subida de fichero a dropbox con ruta opcional.
 		"""
 		try:
 			with open(self.filename) as fh:
@@ -103,19 +110,26 @@ class DropObj(object):
 
 	#----------------------------------------------------------------------
 	def listarCarpetas(self):
-		a=ficheros.ficheros()
+		"""
+		Función que crea una lista con los directorios y ficheros.
+		"""
+		a=[]
 		metadata = self.client.metadata('/')
 		for x in metadata["contents"]:
 			print(bcolors.nuevo+x['path']+bcolors.ENDC)
 			if x['is_dir']==True:
-				a.setNDir(x['path'])
+				p=padre.Padre(x['path'])
 				metadata2 = self.client.metadata(x['path'])
 				for x2 in metadata2["contents"]:
-					a.setNSecundario(x2['path'])
+					p.setHijo(x2['path'])
 					print("\t"+bcolors.morado+x2['path']+bcolors.ENDC)
+				a.append(p)
 		return a
 	#----------------------------------------------------------------------
 	def abrirFichero(self,fich):
+		"""
+		Función que abre un fichero y devuelve se contenido.
+		"""
 		f = self.client.get_file(fich)#abrimos el fichero con el que vamos a trabajar
 		x=f.read()
 		
@@ -123,13 +137,54 @@ class DropObj(object):
 		return x
 	#----------------------------------------------------------------------
 	def archivoMod(self,nomb,dir):
+		"""
+		Función que crea un fichero sin ningún contenido en la carpeta indicada.
+
+		Parámetros:
+		nombre -- nombre del fichero
+		dir -- carpeta donde se aloja el fichero
+		
+		"""
 		respuesta = self.client.put_file(dir+"/"+nomb, "",1)
 	#----------------------------------------------------------------------
 	def saveF(self,contenido,dir):
-		respuesta = self.client.put_file(dir, contenido,1)
+		"""
+		Función que guarda el contenido de un fichero existente que ha sido modificado.
+
+		Parámetros:
+		contenido -- nuevo contenido del fichero.
+		dir -- dirección del fichero a modificar
+		
+		"""
+		try:
+			respuesta = self.client.put_file(dir, contenido,1)
+		except:
+			print("error al guardar")
 	#----------------------------------------------------------------------
 	def borrarF(self,dir):
+		"""
+		Función que borra un fichero indicado.
+
+		Parámetros:
+		dir -- dirección del fichero a modificar
+		
+		"""
 		respuesta = self.client.file_delete(dir)
+		print(bcolors.WARNING+"se ha borrado:"+bcolors.ENDC+bcolors.nuevo+dir+bcolors.ENDC)
+	#----------------------------------------------------------------------
+	def buscar(self):
+		"""
+		Función que busca el fichero de etiquetas, si no existe lo crea
+		
+		"""
+
+		respuesta = self.client.search("","etiquetas.txt")
+		if(respuesta==[]):
+		
+			self.saveF("","etiquetas.txt")
+			print(bcolors.WARNING+"El fichero de etiquetas ha sido creado"+bcolors.ENDC)
+		else:
+			print(bcolors.WARNING+"El fichero de etiquetas ya existe"+bcolors.ENDC)
 	#----------------------------------------------------------------------
 #if __name__ == "__main__":
 #	drop = DropObj("config.ini")

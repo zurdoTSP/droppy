@@ -5,7 +5,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 import ctypes #GetSystemMetrics
 import completo
-import pruebas
+import arbol
 import os.path
 #Clase heredada de QMainWindow (Constructor de ventanas)
 
@@ -40,7 +40,7 @@ class Ventana(QMainWindow):
 	def cambio(self):
 		print(type(self.recipiente.text()))
 		self.drop.nuevoToken(str(self.recipiente.text()))
-		self.ventana2=pruebas.MainWindow(self.drop)
+		self.ventana2=arbol.Arbol(self.drop)
 		self.ventana2.show()
 		self.close()
 
@@ -53,7 +53,7 @@ app = QApplication(sys.argv)
 if os.path.exists(".token.txt"):
 	drop = completo.DropObj("colores.py")
 	drop.autoiden()
-	ventana2=pruebas.MainWindow(drop)
+	ventana2=arbol.Arbol(drop)
 	ventana2.show()
 	ventana2.activateWindow()
 else:
