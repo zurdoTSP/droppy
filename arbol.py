@@ -40,7 +40,19 @@ class Arbol(QMainWindow):
 			item=QListWidgetItem(x.getNombre())
 			item.setIcon(iconCar)
 			self.carpetas.addItem(item)
-	#----------------------------------------------------------------------
+
+		#----------------------------------------------------------------------
+	def buscar(self,cad):
+		x=0
+		t=0
+		while(x<len(self.directorio)):
+			if(self.directorio[x].getNombre()==cad):
+				t=x
+				x=len(self.directorio)+1
+			else:
+				x=x+1
+		return t
+	#---------------------------------------------------------------------
 
 	def hijos(self):
 		"""
@@ -50,14 +62,13 @@ class Arbol(QMainWindow):
 		iconCar=QIcon(self.ruta+'text-plain-icon.png')
 		x=self.carpetas.currentItem().text()
 		self.carpetaActual=x
-		for i in self.directorio:
-			if x==i.getNombre():
-				for j in i.getHijo():
-					item=QListWidgetItem(self.convertir(j))
-					item.setIcon(iconCar)
-					self.ficheros.addItem(item)
-		#----------------------------------------------------------------------
+		n=self.buscar(x)
+		for j in self.directorio[n].getHijo():
+			item=QListWidgetItem(self.convertir(j))
+			item.setIcon(iconCar)
+			self.ficheros.addItem(item)
 
+		#----------------------------------------------------------------------
 	def convertir(self,cad):
 		"""
 		Función que elimina el directorio de la cadena de los hijos
