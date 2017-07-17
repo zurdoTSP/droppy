@@ -126,9 +126,8 @@ class Lector(QMainWindow):
 		Función que busca una cadena dentro de la nota.
 		
 		"""
-		value,crear= QInputDialog.getText(self, "Buscar", "Introduce los caracteres a buscar:")
-		if crear and value!='':
-			self.editor.find(value)
+
+		self.editor.find(self.lineEdit.text())
 	#----------------------------------------------------------------------
 	def cambiarEncriptador(self):
 		if(self.encrip==False):
