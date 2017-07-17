@@ -32,6 +32,8 @@ class Lector(QMainWindow):
 		iconSub=QIcon(self.ruta+'underline.png')
 		self.abierto=QIcon(self.ruta+'abierto.png')
 		self.cerrado=QIcon(self.ruta+'cerrado.png')
+		self.bbusqueda=QIcon(self.ruta+'lupa.png')
+		self.bimpri=QIcon(self.ruta+'print1600.png')
 		self.encrip=False
 
 		self.saves.setIcon(iconSa)
@@ -39,11 +41,15 @@ class Lector(QMainWindow):
 		self.listaB.setIcon(iconL)
 		self.subButton.setIcon(iconSub)
 		self.bEncrip.setIcon(self.abierto)
+		self.bBuscar.setIcon(self.bbusqueda)
+		self.bImprimir.setIcon(self.bimpri)
 		self.saves.clicked.connect(self.save)
 		self.negrita.clicked.connect(self.bold)
 		self.listaB.clicked.connect(self.lista)
 		self.subButton.clicked.connect(self.subra)
 		self.bEncrip.clicked.connect(self.cambiarEncriptador)
+		self.bImprimir.clicked.connect(self.imprimir)
+		self.bBuscar.clicked.connect(self.busqueda)
 		QShortcut(QtGui.QKeySequence("Ctrl+B"), self, self.bold)
 		QShortcut(QtGui.QKeySequence("Ctrl+L"), self, self.lista)
 		QShortcut(QtGui.QKeySequence("Ctrl+U"), self, self.subra)
@@ -55,8 +61,13 @@ class Lector(QMainWindow):
 		if  fich.endswith(".enc"):
 			value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:",QLineEdit.Password)
 			if crear and value!='':
+				
 				x=self.drop.abrirFichero(fich)
-				t=str(self.clave.decrypt(value,x),'cp1252')
+				try:
+					t=str(self.clave.decrypt(value,x),'cp1252')
+				except ValueError:
+					t=""
+					QMessageBox.warning(self, "WARNING", "CONTRASEÑA INCORRECTA")
 				self.editor.setText(t)
 		else:
 			x=str(self.drop.abrirFichero(fich),'cp1252')
@@ -146,9 +157,14 @@ class Lector(QMainWindow):
 					self.drop.borrarF(self.fichero)
 					self.cambiarH()
 				else:
-					self.drop.saveF(self.clave.encrypt(value,self.editor.toHtml()),self.fichero)
-				
+					try:
+						self.drop.saveF(self.clave.encrypt(value,self.editor.toHtml()),self.fichero)
+					except ValueError:
+						QMessageBox.warning(self, "WARNING", "FALLO AL GUARDAR")
 		else:
-			self.drop.saveF(self.editor.toHtml(),self.fichero)
+			try:
+				self.drop.saveF(self.editor.toHtml(),self.fichero)
+			except ValueError:
+				QMessageBox.warning(self, "WARNING", "FALLO AL GUARDAR")
 		print(bcolors.WARNING+"Se ha guardado el fichero"+bcolors.ENDC)
 	#----------------------------------------------------------------------			

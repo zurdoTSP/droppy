@@ -8,6 +8,7 @@ from PyQt5 import QtPrintSupport
 import os.path
 import padre
 import fichero
+import local
 #Clase	heredada	de	QMainWindow	(Constructor	de	ventanas)
 class Arbol(QMainWindow):
 	#Método	constructor	de	la	clase
@@ -48,12 +49,15 @@ class Arbol(QMainWindow):
 		self.ficheros.itemClicked.connect(self.borrarfich)
 		self.ficheros.itemDoubleClicked.connect(self.abrir)
 		self.forma()
+		self.formaLocal()
 		self.boCarpeta=""
 		self.boFichero=""
 		#Asociar botones a funciones
 		self.bCarpeta.clicked.connect(self.crearFolder)
 		self.bFichero.clicked.connect(self.crearFich)
 		self.bBorrar.clicked.connect(self.borrar)
+		QShortcut(QtGui.QKeySequence("Ctrl+B"), self, self.selectRuta)
+
 
 	#----------------------------------------------------------------------
 
@@ -68,7 +72,21 @@ class Arbol(QMainWindow):
 			item.setIcon(iconCar)
 			self.carpetas.addItem(item)
 
-		#----------------------------------------------------------------------
+	#----------------------------------------------------------------------
+	def formaLocal(self):
+		"""
+		Función que rellena la lista que contiene las carpetas
+		"""
+		iconCar=QIcon(self.ruta+'home-iconL.png')
+		#self.directorio=self.drop.listarCarpetas()
+		y=local.Local("/home/zurdots/python/localMode/prueba")
+		lista=y.listar()
+		for x in lista:
+			item=QListWidgetItem(x.getNombre())
+			item.setIcon(iconCar)
+			self.carpetas.addItem(item)
+
+	#----------------------------------------------------------------------
 	def buscar(self,cad):
 		x=0
 		t=0
@@ -174,3 +192,13 @@ class Arbol(QMainWindow):
 	def ChildRemoved(self,event):
 		print("hola")
 
+	def contextMenuEvent(self, event):  
+		menu = QMenu(self)
+		quitAction = menu.addAction("Quit")
+		action = menu.exec_(self.mapToGlobal(event.pos()))
+		if action == quitAction:
+			qApp.quit()
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	def selectRuta(self):
+		file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+		print(file)
