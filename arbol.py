@@ -21,6 +21,7 @@ class Arbol(QMainWindow):
 		self.carpetaActual=""
 		self.drop=dx
 		self.setWindowTitle("Droppy")
+		self.local=False
 		iconCar=QIcon(self.ruta+'New-Folder-icon.png')
 		iconFil=QIcon(self.ruta+'nfile.png')
 		iconBor=QIcon(self.ruta+'papelera.png')
@@ -49,7 +50,7 @@ class Arbol(QMainWindow):
 		self.ficheros.itemClicked.connect(self.borrarfich)
 		self.ficheros.itemDoubleClicked.connect(self.abrir)
 		self.forma()
-		self.formaLocal()
+		#self.formaLocal()
 		self.boCarpeta=""
 		self.boFichero=""
 		#Asociar botones a funciones
@@ -59,6 +60,16 @@ class Arbol(QMainWindow):
 		QShortcut(QtGui.QKeySequence("Ctrl+B"), self, self.selectRuta)
 
 
+	#----------------------------------------------------------------------
+	def cambio(self):
+		self.carpetas.clear()
+		self.ficheros.clear()
+		if local==True:
+			local=False
+			self.forma()
+		else:
+			local=True
+			self.formaLocal()
 	#----------------------------------------------------------------------
 
 	def forma(self):
