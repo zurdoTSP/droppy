@@ -21,10 +21,11 @@ class Arbol(QMainWindow):
 		self.carpetaActual=""
 		self.drop=dx
 		self.setWindowTitle("Droppy")
-		self.local=False
+		self.localM=False
 		iconCar=QIcon(self.ruta+'New-Folder-icon.png')
 		iconFil=QIcon(self.ruta+'nfile.png')
 		iconBor=QIcon(self.ruta+'papelera.png')
+		self.iconDrop=QIcon(self.ruta+'apps.png')
 		iconApp=QIcon("app.png")
 		#########################Barra de menú##########################
 		self.systray = QSystemTrayIcon(iconApp, self)
@@ -45,6 +46,7 @@ class Arbol(QMainWindow):
 		################################################################
 		self.bCarpeta.setIcon(iconCar)
 		self.bFichero.setIcon(iconFil)
+		self.bDropb.setIcon(self.iconDrop)
 		self.bBorrar.setIcon(iconBor)
 		self.carpetas.itemClicked.connect(self.hijos)
 		self.ficheros.itemClicked.connect(self.borrarfich)
@@ -55,6 +57,7 @@ class Arbol(QMainWindow):
 		self.boFichero=""
 		#Asociar botones a funciones
 		self.bCarpeta.clicked.connect(self.crearFolder)
+		self.bDropb.clicked.connect(self.cambio)
 		self.bFichero.clicked.connect(self.crearFich)
 		self.bBorrar.clicked.connect(self.borrar)
 		QShortcut(QtGui.QKeySequence("Ctrl+B"), self, self.selectRuta)
@@ -64,12 +67,24 @@ class Arbol(QMainWindow):
 	def cambio(self):
 		self.carpetas.clear()
 		self.ficheros.clear()
-		if local==True:
-			local=False
-			self.forma()
+		if self.localM==True:
+			self.localM=False
+			self.bDropb.setIcon(self.iconDrop)
+			self.restablece()
 		else:
-			local=True
+			iconCar=QIcon(self.ruta+'home-icon.png')
+			self.bDropb.setIcon(iconCar)
+			self.localM=True
 			self.formaLocal()
+
+	#----------------------------------------------------------------------
+	def restablece(self):
+		iconCar=QIcon(self.ruta+'home-icon.png')
+		for x in self.directorio:
+			item=QListWidgetItem(x.getNombre())
+			item.setIcon(iconCar)
+			self.carpetas.addItem(item)
+
 	#----------------------------------------------------------------------
 
 	def forma(self):
@@ -90,7 +105,7 @@ class Arbol(QMainWindow):
 		"""
 		iconCar=QIcon(self.ruta+'home-iconL.png')
 		#self.directorio=self.drop.listarCarpetas()
-		y=local.Local("/home/zurdots/python/localMode/prueba")
+		y=local.Local("/home/zurdotsp/python/local")
 		lista=y.listar()
 		for x in lista:
 			item=QListWidgetItem(x.getNombre())
