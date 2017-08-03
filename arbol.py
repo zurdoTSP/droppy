@@ -8,6 +8,7 @@ from PyQt5 import QtPrintSupport
 import os.path
 import padre
 import fichero
+import ficheroL
 import local
 #Clase	heredada	de	QMainWindow	(Constructor	de	ventanas)
 class Arbol(QMainWindow):
@@ -65,6 +66,9 @@ class Arbol(QMainWindow):
 
 	#----------------------------------------------------------------------
 	def cambio(self):
+		"""
+		Función que cambia entre local y Dropbox
+		"""
 		self.carpetas.clear()
 		self.ficheros.clear()
 		if self.localM==True:
@@ -79,6 +83,9 @@ class Arbol(QMainWindow):
 
 	#----------------------------------------------------------------------
 	def restablece(self):
+		"""
+		Función que rstablece los valores de Dropbox
+		"""
 		iconCar=QIcon(self.ruta+'home-icon.png')
 		for x in self.directorio:
 			item=QListWidgetItem(x.getNombre())
@@ -89,7 +96,7 @@ class Arbol(QMainWindow):
 
 	def forma(self):
 		"""
-		Función que rellena la lista que contiene las carpetas
+		Función que rellena la lista que contiene las carpetas de Dropbox
 		"""
 		iconCar=QIcon(self.ruta+'home-icon.png')
 		self.directorio=self.drop.listarCarpetas()
@@ -101,13 +108,13 @@ class Arbol(QMainWindow):
 	#----------------------------------------------------------------------
 	def formaLocal(self):
 		"""
-		Función que rellena la lista que contiene las carpetas
+		Función que rellena la lista que contiene las carpetas locales
 		"""
 		iconCar=QIcon(self.ruta+'home-iconL.png')
 		#self.directorio=self.drop.listarCarpetas()
-		y=local.Local("/home/zurdotsp/python/local")
-		lista=y.listar()
-		for x in lista:
+		self.tlocal=local.Local("/home/zurdotsp/python/local")
+		self.lista=self.tlocal.listar()
+		for x in self.lista:
 			item=QListWidgetItem(x.getNombre())
 			item.setIcon(iconCar)
 			self.carpetas.addItem(item)
@@ -123,6 +130,17 @@ class Arbol(QMainWindow):
 			else:
 				x=x+1
 		return t
+	#----------------------------------------------------------------------
+	def buscarl(self,cad):
+		x=0
+		t=0
+		while(x<len(self.lista)):
+			if(self.lista[x].getNombre()==cad):
+				t=x
+				x=len(self.lista)+1
+			else:
+				x=x+1
+		return t
 	#---------------------------------------------------------------------
 
 	def hijos(self):
@@ -131,14 +149,24 @@ class Arbol(QMainWindow):
 		"""
 		self.ficheros.clear()
 		iconCar=QIcon(self.ruta+'text-plain-icon.png')
-		x=self.carpetas.currentItem().text()
-		self.carpetaActual=x
-		self.boCarpeta=x
-		n=self.buscar(x)
-		for j in self.directorio[n].getHijo():
-			item=QListWidgetItem(self.convertir(j))
-			item.setIcon(iconCar)
-			self.ficheros.addItem(item)
+		if self.localM==False:
+			x=self.carpetas.currentItem().text()
+			self.carpetaActual=x
+			self.boCarpeta=x
+			n=self.buscar(x)
+			for j in self.directorio[n].getHijo():
+				item=QListWidgetItem(self.convertir(j))
+				item.setIcon(iconCar)
+				self.ficheros.addItem(item)
+		else:
+			x=self.carpetas.currentItem().text()
+			self.carpetaActual=x
+			self.boCarpeta=x
+			n=self.buscarl(x)
+			for j in self.lista[n].getHijo():
+				item=QListWidgetItem(j)
+				item.setIcon(iconCar)
+				self.ficheros.addItem(item)
 
 		#----------------------------------------------------------------------
 	def convertir(self,cad):
@@ -158,29 +186,48 @@ class Arbol(QMainWindow):
 		"""
 		value,crear= QInputDialog.getText(self, "crear archivo", "Nombre de la nueva carpeta:")
 		if crear and value!='':
-			print('Nombre:', value)
-			self.drop.crearCarpeta(value)
-			iconCar=QIcon(self.ruta+'home-icon.png')
-			item=QListWidgetItem("/"+value)
-			item.setIcon(iconCar)
-			self.carpetas.addItem(item)
-			p=padre.Padre("/"+value)
-			self.directorio.append(p)
+			if self.localM==False:
+				print('Nombre:', value)
+				self.drop.crearCarpeta(value)
+				iconCar=QIcon(self.ruta+'home-icon.png')
+				item=QListWidgetItem("/"+value)
+				item.setIcon(iconCar)
+				self.carpetas.addItem(item)
+				p=padre.Padre("/"+value)
+				self.directorio.append(p)
+			else:
+				print('Nombre:', value)
+				
+				iconCar=QIcon(self.ruta+'home-iconL.png')
+				item=QListWidgetItem("/"+value)
+				item.setIcon(iconCar)
+				self.carpetas.addItem(item)
+				self.tlocal.crearCarpeta(value)
+
 #----------------------------------------------------------------------
 	def crearFich(self):
+		iconCar=QIcon(self.ruta+'text-plain-icon.png')
 		if(self.carpetaActual!=""):
 			value,crear= QInputDialog.getText(self, "crear archivo", "Nombre del nuevo fichero:")
 			if crear and value!='':
 				if not value.endswith(".writer"):
 					value=value+".writer"
-				self.drop.archivoMod(value,self.carpetaActual)
-				iconCar=QIcon(self.ruta+'home-icon.png')
-				item=QListWidgetItem(value)
-				item.setIcon(iconCar)#setHijo
-				self.ficheros.addItem(item)
-				n=self.buscar(self.carpetaActual)
-				print(n)
-				self.directorio[n].setHijo(self.carpetaActual+"/"+value)
+				if self.localM==False:
+					self.drop.archivoMod(value,self.carpetaActual)
+					item=QListWidgetItem(value)
+					item.setIcon(iconCar)#setHijo
+					self.ficheros.addItem(item)
+					n=self.buscar(self.carpetaActual)
+					print(n)
+					self.directorio[n].setHijo(self.carpetaActual+"/"+value)
+				else:
+					self.tlocal.crearFichero(value,self.carpetaActual,"")
+					item=QListWidgetItem(value)
+					item.setIcon(iconCar)#setHijo
+					self.ficheros.addItem(item)
+					n=self.buscarl(self.carpetaActual)
+					print(n)
+					self.lista[n].setHijo(self.carpetaActual+"/"+value)
 		else:
 			print("debes establecer la ruta")
 			QMessageBox.warning(self, "WARNING", "Debes establecer una ruta para poder crear un fichero")
@@ -212,9 +259,15 @@ class Arbol(QMainWindow):
 		print(self.boFichero)
 #----------------------------------------------------------------------
 	def abrir(self):
-		x=self.ficheros.currentItem().text()
-		self.ventana2=fichero.Lector(self.drop,self.carpetaActual+"/"+x,self)
-		self.ventana2.show()
+		if self.localM==False:
+			x=self.ficheros.currentItem().text()
+			self.ventana2=fichero.Lector(self.drop,self.carpetaActual+"/"+x,self)
+			self.ventana2.show()
+		else:
+			x=self.ficheros.currentItem().text()
+			print(self.carpetaActual+x+" zurdinio")
+			self.ventana3=ficheroL.Lector("/home/zurdotsp/python/local",self.carpetaActual+x)
+			self.ventana3.show()
 	def ChildRemoved(self,event):
 		print("hola")
 

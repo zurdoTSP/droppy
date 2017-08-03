@@ -13,9 +13,14 @@ class Local:
 		mensaje = texto
 		f.write(mensaje)
 		f.close()
+	def crearFicheroU(self,fich, texto):
+		f = open(self.__ruta+"/"+fich,'w')
+		mensaje = texto
+		f.write(mensaje)
+		f.close()
 
-	def leerFichero(self,nombre,carpeta):
-		ObjFichero = open(self.__ruta+"/"+carpeta+"/"+nombre)
+	def leerFichero(self,entrada):
+		ObjFichero = open(self.__ruta+entrada)
 		x=ObjFichero.read()
 		ObjFichero.close()
 		return x
