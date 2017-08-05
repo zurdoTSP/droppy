@@ -14,17 +14,18 @@ from colores import bcolors
 #Clase	heredada	de	QMainWindow	(Constructor	de	ventanas)
 class Lector(QMainWindow):
 	#Método	constructor	de	la	clase
-	def __init__(self,ruta, fich):
+	def __init__(self, fich,pad):
 		#Iniciar	el	objeto	QMainWindow
 		QMainWindow.__init__(self)
 		#Cargar	la	configuración	del	archivo	.ui	en	el	objeto
 		self.ruta=os.getcwd()+"/icons/"
+		self.padre=pad
 		uic.loadUi("mainwindow3.ui",self)
 		self.clave=AESCipher.AESCipher()
 		self.loc=local.Local(ruta)
 		self.setWindowTitle(fich)
 		self.fichero=fich
-		self.rutaCarpeta=ruta
+
 		self.abrir(self.fichero)
 		iconSa=QIcon(self.ruta+'save-icon.png')
 		iconL=QIcon(self.ruta+'lista-icon.png')
@@ -63,6 +64,7 @@ class Lector(QMainWindow):
 			if crear and value!='':
 				
 				x=self.loc.leerFichero(fich)
+				
 				try:
 					t=str(self.clave.decrypt(value,x),'cp1252')
 				except ValueError:
@@ -140,7 +142,7 @@ class Lector(QMainWindow):
 	#----------------------------------------------------------------------
 	"""###########################################################
 
-			FUNCIONES DE DROPBOX
+			FUNCIONES DE LOCAL
 
 	###########################################################"""
 	def save(self):
@@ -152,12 +154,15 @@ class Lector(QMainWindow):
 			value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:",QLineEdit.Password)
 			if crear and value!='':
 				if not self.fichero.endswith(".enc"):
-					self.loc.crearFicheroU(self.fichero+".enc",self.clave.encrypt(value,self.editor.toHtml()))
-					#self.drop.borrarF(self.fichero)
-					#self.cambiarH()
+					self.loc.crearFicheroUE(self.fichero+".enc",self.clave.encrypt(value,self.editor.toHtml()))
+					self.loc.eliminarFichero(self.fichero)
+					self.padre.carpetas.clear()
+					self.padre.ficheros.clear()
+					self.padre.formaLocal()
 				else:
 					try:
-						self.loc.crearFicheroU(self.fichero,self.clave.encrypt(value,self.editor.toHtml()))
+						textoE=self.clave.encrypt(value,self.editor.toHtml())
+						self.loc.crearFicheroUE(self.fichero,textoE)
 					except ValueError:
 						QMessageBox.warning(self, "WARNING", "FALLO AL GUARDAR")
 		else:

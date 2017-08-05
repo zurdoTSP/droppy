@@ -7,6 +7,7 @@ import ctypes #GetSystemMetrics
 import completo
 import arbol
 import os.path
+import local
 #Clase heredada de QMainWindow (Constructor de ventanas)
 
 
@@ -57,6 +58,8 @@ if os.path.exists(".token.txt"):
 	ventana2.show()
 	ventana2.activateWindow()
 else:
+	loc=local.Local()
+	loc.crearCarpetaInicio()
 	_ventana = Ventana()
 #Mostra la ventana
 	_ventana.show()

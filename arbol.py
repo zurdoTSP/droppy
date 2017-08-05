@@ -112,7 +112,7 @@ class Arbol(QMainWindow):
 		"""
 		iconCar=QIcon(self.ruta+'home-iconL.png')
 		#self.directorio=self.drop.listarCarpetas()
-		self.tlocal=local.Local("/home/zurdotsp/python/local")
+		self.tlocal=local.Local()
 		self.lista=self.tlocal.listar()
 		for x in self.lista:
 			item=QListWidgetItem(x.getNombre())
@@ -164,6 +164,7 @@ class Arbol(QMainWindow):
 			self.boCarpeta=x
 			n=self.buscarl(x)
 			for j in self.lista[n].getHijo():
+				j=j[1:]
 				item=QListWidgetItem(j)
 				item.setIcon(iconCar)
 				self.ficheros.addItem(item)
@@ -237,26 +238,41 @@ class Arbol(QMainWindow):
 		"""
 		Función para crear carpetas en Dropbox.
 		"""
-		if(self.boCarpeta!=""):
-			self.drop.borrarF(self.boCarpeta)
-			self.carpetas.clear()
-			self.ficheros.clear()
-			self.forma()
-		else:
-			if(self.boFichero==""):
-				QMessageBox.warning(self, "WARNING", "Debes seleccionar una carpeta o un fichero")
-			else:
-				self.drop.borrarF(self.boFichero)
+		if self.localM==False:
+			if(self.boCarpeta!=""):
+				self.drop.borrarF(self.boCarpeta)
 				self.carpetas.clear()
 				self.ficheros.clear()
 				self.forma()
-				
+			else:
+				if(self.boFichero==""):
+					QMessageBox.warning(self, "WARNING", "Debes seleccionar una carpeta o un fichero")
+				else:
+					self.drop.borrarF(self.boFichero)
+					self.carpetas.clear()
+					self.ficheros.clear()
+					self.forma()
+		else:
+			if(self.boCarpeta!=""):
+				self.tlocal.eliminarCarpeta(self.boCarpeta)
+				self.carpetas.clear()
+				self.ficheros.clear()
+				self.formaLocal()
+			else:
+				if(self.boFichero==""):
+					QMessageBox.warning(self, "WARNING", "Debes seleccionar una carpeta o un fichero")
+				else:
+					self.tlocal.eliminarFichero(self.boFichero)
+					self.carpetas.clear()
+					self.ficheros.clear()
+					self.formaLocal()
 #----------------------------------------------------------------------
 	def borrarfich(self):
-		print(self.boCarpeta+" se anula y ")
-		self.boFichero=self.boCarpeta+"/"+self.ficheros.currentItem().text()
-		self.boCarpeta=""
-		print(self.boFichero)
+			print(self.boCarpeta+" se anula y ")
+			self.boFichero=self.boCarpeta+"/"+self.ficheros.currentItem().text()
+			self.boCarpeta=""
+			print(self.boFichero)
+
 #----------------------------------------------------------------------
 	def abrir(self):
 		if self.localM==False:
@@ -265,8 +281,9 @@ class Arbol(QMainWindow):
 			self.ventana2.show()
 		else:
 			x=self.ficheros.currentItem().text()
+			
 			print(self.carpetaActual+x+" zurdinio")
-			self.ventana3=ficheroL.Lector("/home/zurdotsp/python/local",self.carpetaActual+x)
+			self.ventana3=ficheroL.Lector(self.carpetaActual+"/"+x,self)
 			self.ventana3.show()
 	def ChildRemoved(self,event):
 		print("hola")

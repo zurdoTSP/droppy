@@ -3,10 +3,13 @@ from os import listdir
 from colores import bcolors
 import padre
 class Local:
-	def __init__(self,ruta):
-		self.__ruta=ruta
+	def __init__(self):
+		self.__ruta=os.getcwd()+"/notas"
 	def crearCarpeta(self,nombre):
 		os.mkdir(self.__ruta+"/"+nombre)
+
+	def crearCarpetaInicio(self):
+		os.mkdir(os.getcwd()+"/notas")
 
 	def crearFichero(self,nombre,carpeta, texto):
 		f = open(self.__ruta+"/"+carpeta+"/"+nombre,'w')
@@ -14,7 +17,13 @@ class Local:
 		f.write(mensaje)
 		f.close()
 	def crearFicheroU(self,fich, texto):
-		f = open(self.__ruta+"/"+fich,'w')
+		f = open(self.__ruta+fich,'w')
+		mensaje = texto
+		f.write(mensaje)
+		f.close()
+
+	def crearFicheroUE(self,fich, texto):
+		f = open(self.__ruta+fich,'wb')
 		mensaje = texto
 		f.write(mensaje)
 		f.close()
@@ -40,8 +49,8 @@ class Local:
 			a.append(p)
 		return a
 
-	def eliminarFichero(self, carpeta, nombre):
-		os.remove(self.__ruta+carpeta+nombre)
+	def eliminarFichero(self,fic):
+		os.remove(self.__ruta+fic)
 
 	def eliminarCarpeta(self, carpeta):
-		os.remove(self.__ruta+carpeta)
+		os.removedirs(self.__ruta+carpeta)
