@@ -68,7 +68,8 @@ class Arbol(QMainWindow):
 		self.bBorrar.clicked.connect(self.borrar)
 		QShortcut(QtGui.QKeySequence("Ctrl+B"), self, self.selectRuta)
 		self.lineEdit.returnPressed.connect(self.filtrar)
-		self.control.leeYSepara()
+		lectura=str(self.drop.abrirFichero("etiquetas.txt"),'cp1252')
+		self.control.leeYSepara(lectura)
 	#----------------------------------------------------------------------
 	def cambio(self):
 		"""
@@ -228,6 +229,7 @@ class Arbol(QMainWindow):
 					n=self.buscar(self.carpetaActual)
 					print(n)
 					self.directorio[n].setHijo(self.carpetaActual+"/"+value)
+					self.control.nuevoD(self.carpetaActual,value)
 				else:
 					self.tlocal.crearFichero(value,self.carpetaActual,"")
 					item=QListWidgetItem(value)
@@ -341,11 +343,17 @@ class Arbol(QMainWindow):
 				item=QListWidgetItem(x.getNombre())
 				item.setIcon(iconCar)
 				self.carpetas.addItem(item)
+
 	def anadir(self,fich,tipo,nueva):
 		if(tipo=="lc"):
 			self.control.nEtiquetaL(fich,nueva)
-		print(self.control.crearCadenaL())
+		else:
+			self.control.nEtiquetaD(fich,nueva)
+		print(self.control.crearCadenaD())
+		
 
 	def closeEvent(self, event):
 		x=self.control.crearCadenaL()
+		y=self.control.crearCadenaD()
+		self.drop.saveF(y,"etiquetas.txt")
 		self.tlocal.volcar(x)

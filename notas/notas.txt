@@ -2,4 +2,4 @@
 /zurdinio+anarka.writer|rumania
 /zurdinio+anarnio.writer
 
-/otra+nuevo.writer|etiqueta|otra
+/otra+nuevo.writer|etiqueta|otra|etiqueta

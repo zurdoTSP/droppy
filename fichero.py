@@ -50,6 +50,7 @@ class Lector(QMainWindow):
 		self.bEncrip.clicked.connect(self.cambiarEncriptador)
 		self.bImprimir.clicked.connect(self.imprimir)
 		self.bBuscar.clicked.connect(self.busqueda)
+		self.etiquet.clicked.connect(self.nuevaE)
 		QShortcut(QtGui.QKeySequence("Ctrl+B"), self, self.bold)
 		QShortcut(QtGui.QKeySequence("Ctrl+L"), self, self.lista)
 		QShortcut(QtGui.QKeySequence("Ctrl+U"), self, self.subra)
@@ -166,4 +167,8 @@ class Lector(QMainWindow):
 			except ValueError:
 				QMessageBox.warning(self, "WARNING", "FALLO AL GUARDAR")
 		print(bcolors.WARNING+"Se ha guardado el fichero"+bcolors.ENDC)
-	#----------------------------------------------------------------------			
+	#----------------------------------------------------------------------		
+	def nuevaE(self):
+		value,crear= QInputDialog.getText(self, "añadir etiqueta", "Nombre de la nueva etiqueta:")
+		if crear and value!='':
+			self.padre.anadir(self.fichero,"dx",value)	

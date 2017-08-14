@@ -11,7 +11,7 @@ class ControlInfo:
             t=infoEt.InfoEtiquetas(x)
             self.__listaD.append(t)
 
-    def leeYSepara(self):
+    def leeYSepara(self,cad):
         x=local.Local()
         y=x.leerFicheroL("/notas.txt")
         for n in y:
@@ -19,6 +19,15 @@ class ControlInfo:
             self.__listaL.append(t)
             print(t.getHijo())
             print(t.getPadre())
+        z=cad
+        print(z)
+        for n in z:
+     
+            t=infoEt.InfoEtiquetas(n)
+            self.__listaD.append(t)
+            print(t.getHijo())
+            print(t.getPadre())
+	
 
     def buscarL(self, cad):
         final=[]
@@ -60,3 +69,34 @@ class ControlInfo:
         t=infoEt.InfoEtiquetas("")
         t.setN(nom,fich)
         self.__listaL.append(t)
+
+
+#####################################################
+    def nEtiquetaD(self,cad,et):
+        for x in self.__listaD:
+            print(x.getPadre()+"/"+x.getHijo()+" es igual a "+cad)
+            if(x.getPadre()+"/"+x.getHijo()==cad):
+                x.nuevaE(et)
+
+    def nuevoD(self,nom,fich):
+        t=infoEt.InfoEtiquetas("")
+        t.setN(nom,fich)
+        self.__listaD.append(t)
+
+    def crearCadenaD(self):
+        cad=""
+        cadH=""
+        cadI=[]
+        for x in self.__listaD:
+            cad=cad+x.getPadre()+"+"+x.getHijo()
+            for y in x.getLista():
+                cadH=cadH+"|"+y
+            cad=cad+cadH+"\n"
+            cadI.append(cad)
+            cadH=""
+            cad=""
+        for i in cadI:
+            if(i!="+\n"and i!="\n"):
+                print("tu puta madre")
+                cad=cad+i
+        return cad
