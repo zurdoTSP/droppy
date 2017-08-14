@@ -1,0 +1,5 @@
+/zurdinio+antonio.writer|rumania
+/zurdinio+anarka.writer|rumania
+/zurdinio+anarnio.writer
+
+/otra+nuevo.writer|etiqueta|otra

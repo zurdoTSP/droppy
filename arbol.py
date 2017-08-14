@@ -10,6 +10,8 @@ import padre
 import fichero
 import ficheroL
 import local
+import controlInfo
+import padre
 #Clase	heredada	de	QMainWindow	(Constructor	de	ventanas)
 class Arbol(QMainWindow):
 	#Método	constructor	de	la	clase
@@ -28,6 +30,8 @@ class Arbol(QMainWindow):
 		iconBor=QIcon(self.ruta+'papelera.png')
 		self.iconDrop=QIcon(self.ruta+'apps.png')
 		iconApp=QIcon("app.png")
+		self.control=controlInfo.ControlInfo()
+		self.directorioP=[]
 		#########################Barra de menú##########################
 		self.systray = QSystemTrayIcon(iconApp, self)
 		show_action = QAction("Show", self)
@@ -43,7 +47,7 @@ class Arbol(QMainWindow):
 		self.systray.setContextMenu(tray_menu)
 		self.systray.show()
 		######################Icono visible dock########################
-		self.setWindowIcon(iconApp) 
+		self.setWindowIcon(iconApp)
 		################################################################
 		self.bCarpeta.setIcon(iconCar)
 		self.bFichero.setIcon(iconFil)
@@ -56,14 +60,15 @@ class Arbol(QMainWindow):
 		#self.formaLocal()
 		self.boCarpeta=""
 		self.boFichero=""
+		self.drop.buscar()
 		#Asociar botones a funciones
 		self.bCarpeta.clicked.connect(self.crearFolder)
 		self.bDropb.clicked.connect(self.cambio)
 		self.bFichero.clicked.connect(self.crearFich)
 		self.bBorrar.clicked.connect(self.borrar)
 		QShortcut(QtGui.QKeySequence("Ctrl+B"), self, self.selectRuta)
-
-
+		self.lineEdit.returnPressed.connect(self.filtrar)
+		self.control.leeYSepara()
 	#----------------------------------------------------------------------
 	def cambio(self):
 		"""
@@ -154,6 +159,7 @@ class Arbol(QMainWindow):
 			self.carpetaActual=x
 			self.boCarpeta=x
 			n=self.buscar(x)
+
 			for j in self.directorio[n].getHijo():
 				item=QListWidgetItem(self.convertir(j))
 				item.setIcon(iconCar)
@@ -163,11 +169,13 @@ class Arbol(QMainWindow):
 			self.carpetaActual=x
 			self.boCarpeta=x
 			n=self.buscarl(x)
-			for j in self.lista[n].getHijo():
-				j=j[1:]
-				item=QListWidgetItem(j)
-				item.setIcon(iconCar)
-				self.ficheros.addItem(item)
+
+			if(len(self.lista)>0):
+				for j in self.lista[n].getHijo():
+					i=self.transformar(j)
+					item=QListWidgetItem(i)
+					item.setIcon(iconCar)
+					self.ficheros.addItem(item)
 
 		#----------------------------------------------------------------------
 	def convertir(self,cad):
@@ -198,12 +206,11 @@ class Arbol(QMainWindow):
 				self.directorio.append(p)
 			else:
 				print('Nombre:', value)
-				
 				iconCar=QIcon(self.ruta+'home-iconL.png')
-				item=QListWidgetItem("/"+value)
-				item.setIcon(iconCar)
-				self.carpetas.addItem(item)
 				self.tlocal.crearCarpeta(value)
+				self.carpetas.clear()
+				self.ficheros.clear()
+				self.formaLocal()
 
 #----------------------------------------------------------------------
 	def crearFich(self):
@@ -227,8 +234,9 @@ class Arbol(QMainWindow):
 					item.setIcon(iconCar)#setHijo
 					self.ficheros.addItem(item)
 					n=self.buscarl(self.carpetaActual)
-					print(n)
+
 					self.lista[n].setHijo(self.carpetaActual+"/"+value)
+					self.control.nuevoL(self.carpetaActual,value)
 		else:
 			print("debes establecer la ruta")
 			QMessageBox.warning(self, "WARNING", "Debes establecer una ruta para poder crear un fichero")
@@ -281,14 +289,14 @@ class Arbol(QMainWindow):
 			self.ventana2.show()
 		else:
 			x=self.ficheros.currentItem().text()
-			
+
 			print(self.carpetaActual+x+" zurdinio")
 			self.ventana3=ficheroL.Lector(self.carpetaActual+"/"+x,self)
 			self.ventana3.show()
 	def ChildRemoved(self,event):
 		print("hola")
 
-	def contextMenuEvent(self, event):  
+	def contextMenuEvent(self, event):
 		menu = QMenu(self)
 		quitAction = menu.addAction("Quit")
 		action = menu.exec_(self.mapToGlobal(event.pos()))
@@ -298,3 +306,46 @@ class Arbol(QMainWindow):
 	def selectRuta(self):
 		file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
 		print(file)
+
+	def transformar(self,var):
+		t=var.split("/")
+		if(len(t)>2):
+			l=t[2]
+		else:
+			l=var[1:]
+		return l
+	def filtrar(self):
+		lisca=[]
+		x=self.control.buscarL(self.lineEdit.text())
+		if(x==[]):
+			self.carpetas.clear()
+			self.ficheros.clear()
+			self.formaLocal()
+		else:
+			self.lista=[]
+			for i in x:
+				if(i.getPadre() in lisca):
+					for q in self.lista:
+						if(q.getNombre()==i.getPadre()):
+							q.setHijo("/"+i.getHijo())
+				else:
+					p=padre.Padre(i.getPadre())
+					print(i.getPadre())
+					p.setHijo("/"+i.getHijo())
+					self.lista.append(p)
+				lisca.append(i.getPadre())
+			self.carpetas.clear()
+			self.ficheros.clear()
+			iconCar=QIcon(self.ruta+'home-iconL.png')
+			for x in self.lista:
+				item=QListWidgetItem(x.getNombre())
+				item.setIcon(iconCar)
+				self.carpetas.addItem(item)
+	def anadir(self,fich,tipo,nueva):
+		if(tipo=="lc"):
+			self.control.nEtiquetaL(fich,nueva)
+		print(self.control.crearCadenaL())
+
+	def closeEvent(self, event):
+		x=self.control.crearCadenaL()
+		self.tlocal.volcar(x)

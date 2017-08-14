@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt
 from PyQt5 import QtPrintSupport
 import os.path
 import padre
-import ctypes 
+import ctypes
 import AESCipher
 import local
 from colores import bcolors
@@ -22,7 +22,7 @@ class Lector(QMainWindow):
 		self.padre=pad
 		uic.loadUi("mainwindow3.ui",self)
 		self.clave=AESCipher.AESCipher()
-		self.loc=local.Local(ruta)
+		self.loc=local.Local()
 		self.setWindowTitle(fich)
 		self.fichero=fich
 
@@ -47,6 +47,7 @@ class Lector(QMainWindow):
 		self.saves.clicked.connect(self.save)
 		self.negrita.clicked.connect(self.bold)
 		self.listaB.clicked.connect(self.lista)
+		self.etiquet.clicked.connect(self.nuevaE)
 		self.subButton.clicked.connect(self.subra)
 		self.bEncrip.clicked.connect(self.cambiarEncriptador)
 		self.bImprimir.clicked.connect(self.imprimir)
@@ -62,9 +63,9 @@ class Lector(QMainWindow):
 		if  fich.endswith(".enc"):
 			value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:",QLineEdit.Password)
 			if crear and value!='':
-				
+
 				x=self.loc.leerFichero(fich)
-				
+
 				try:
 					t=str(self.clave.decrypt(value,x),'cp1252')
 				except ValueError:
@@ -80,7 +81,7 @@ class Lector(QMainWindow):
 	def imprimir(self):
 		"""
 		Función que imprime o convierte a PDF la nota abierta.
-		
+
 		"""
 		dialog = QtPrintSupport.QPrintDialog()
 
@@ -126,7 +127,7 @@ class Lector(QMainWindow):
 	def busqueda(self):
 		"""
 		Función que busca una cadena dentro de la nota.
-		
+
 		"""
 
 		self.editor.find(self.lineEdit.text())
@@ -171,4 +172,8 @@ class Lector(QMainWindow):
 			except ValueError:
 				QMessageBox.warning(self, "WARNING", "FALLO AL GUARDAR")
 		print(bcolors.WARNING+"Se ha guardado el fichero"+bcolors.ENDC)
-	#----------------------------------------------------------------------			
+	#----------------------------------------------------------------------
+	def nuevaE(self):
+		value,crear= QInputDialog.getText(self, "añadir etiqueta", "Nombre de la nueva etiqueta:")
+		if crear and value!='':
+			self.padre.anadir(self.fichero,"lc",value)

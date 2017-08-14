@@ -16,6 +16,13 @@ class Local:
 		mensaje = texto
 		f.write(mensaje)
 		f.close()
+	def crearFicheroInial(self):
+			f = open(self.__ruta+"/"+"notas.txt",'w')
+			f.close()
+	def volcar(self,cad):
+		f = open(self.__ruta+"/"+"notas.txt",'w')
+		f.write(cad)
+		f.close()
 	def crearFicheroU(self,fich, texto):
 		f = open(self.__ruta+fich,'w')
 		mensaje = texto
@@ -43,10 +50,11 @@ class Local:
 		for carpeta in listdir(self.__ruta):
 			print(bcolors.nuevo+carpeta+bcolors.ENDC)
 			p=padre.Padre("/"+carpeta)
-			for fichero in listdir(self.__ruta+"/"+carpeta):
-				p.setHijo("/"+fichero)
-				print("\t"+bcolors.morado+fichero+bcolors.ENDC)
-			a.append(p)
+			if(not carpeta=="notas.txt"):
+				for fichero in listdir(self.__ruta+"/"+carpeta):
+					p.setHijo("/"+fichero)
+					print("\t"+bcolors.morado+fichero+bcolors.ENDC)
+				a.append(p)
 		return a
 
 	def eliminarFichero(self,fic):
@@ -54,3 +62,12 @@ class Local:
 
 	def eliminarCarpeta(self, carpeta):
 		os.removedirs(self.__ruta+carpeta)
+
+	def leerFicheroL(self,entrada):
+		ObjFichero = open(self.__ruta+entrada)
+		lista=[]
+		for x in ObjFichero:
+			if(x!="" or x!="+"):
+				lista.append(x)
+		ObjFichero.close()
+		return lista

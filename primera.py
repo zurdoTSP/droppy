@@ -60,7 +60,10 @@ if os.path.exists(".token.txt"):
 else:
 	loc=local.Local()
 	loc.crearCarpetaInicio()
+	if not os.path.exists(".token.txt"):
+		loc.crearFicheroInial()
 	_ventana = Ventana()
+
 #Mostra la ventana
 	_ventana.show()
 
