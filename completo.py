@@ -7,8 +7,7 @@ import padre
 ########################################################################
 class DropObj(object):
 	"""
-	Dropbox object that can access your dropbox folder,
-	as well as download and upload files to dropbox
+	clase encargada de controlar la comunicación e interactuar con Dropbox
 	"""
 
 	#----------------------------------------------------------------------
@@ -28,7 +27,7 @@ class DropObj(object):
 	#----------------------------------------------------------------------
 	def nuevoToken(self,code):
 		"""
-		Guardamos el valor de nuestro identificador de dropbox.
+		Función encargada de guardar el valor del identificador de dropbox.
 		"""
 		self.access_token, user_id = self.flow.finish(code)
 		self.client = dropbox.client.DropboxClient(self.access_token)
@@ -39,7 +38,7 @@ class DropObj(object):
 	#----------------------------------------------------------------------
 	def autoiden(self):
 		"""
-		Cogemos el token del fichero y lo validamos.
+		Función encargada de extraer el token del fichero y validarlo.
 		"""
 		infile = open('.token.txt', 'r')
 		x=infile.read()
@@ -48,7 +47,9 @@ class DropObj(object):
 
 		#----------------------------------------------------------------------
 	def getAutorize(self):
-
+		"""
+		Función encargada de devolver la url que se usará para obtener el token.
+		"""
 		return self.authorize_url
 
 		#----------------------------------------------------------------------
@@ -77,7 +78,9 @@ class DropObj(object):
 
 	#----------------------------------------------------------------------
 	def get_account_info(self):
-
+		"""
+		Función encargada de obtener información de la cuenta que se esta utilizando.
+		"""
 		return self.client.account_info()
 
 	#----------------------------------------------------------------------
@@ -87,7 +90,7 @@ class DropObj(object):
 
 		Parámetros:
 		carpeta -- nombre de la carpeta que será creada.
-		
+
 		"""
 
 		self.client.file_create_folder('/'+carpeta)
@@ -132,7 +135,7 @@ class DropObj(object):
 		"""
 		f = self.client.get_file(fich)#abrimos el fichero con el que vamos a trabajar
 		x=f.read()
-		
+
 		f.close()
 		return x
 	#----------------------------------------------------------------------
@@ -143,7 +146,7 @@ class DropObj(object):
 		Parámetros:
 		nombre -- nombre del fichero
 		dir -- carpeta donde se aloja el fichero
-		
+
 		"""
 		respuesta = self.client.put_file(dir+"/"+nomb, "",1)
 	#----------------------------------------------------------------------
@@ -154,7 +157,7 @@ class DropObj(object):
 		Parámetros:
 		contenido -- nuevo contenido del fichero.
 		dir -- dirección del fichero a modificar
-		
+
 		"""
 		try:
 			respuesta = self.client.put_file(dir, contenido,1)
@@ -167,20 +170,20 @@ class DropObj(object):
 
 		Parámetros:
 		dir -- dirección del fichero a modificar
-		
+
 		"""
 		respuesta = self.client.file_delete(dir)
 		print(bcolors.WARNING+"se ha borrado:"+bcolors.ENDC+bcolors.nuevo+dir+bcolors.ENDC)
 	#----------------------------------------------------------------------
 	def buscar(self):
 		"""
-		Función que busca el fichero de etiquetas, si no existe lo crea
-		
+		Función que busca el fichero de etiquetas y lo crea en el caso de no existir.
+
 		"""
 
 		respuesta = self.client.search("","etiquetas.txt")
 		if(respuesta==[]):
-		
+
 			self.saveF("","etiquetas.txt")
 			print(bcolors.WARNING+"El fichero de etiquetas ha sido creado"+bcolors.ENDC)
 		else:

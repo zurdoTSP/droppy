@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt
 from PyQt5 import QtPrintSupport
 import os.path
 import padre
-import ctypes 
+import ctypes
 import AESCipher
 from colores import bcolors
 #Clase	heredada	de	QMainWindow	(Constructor	de	ventanas)
@@ -59,10 +59,13 @@ class Lector(QMainWindow):
 		QShortcut(QtGui.QKeySequence("Ctrl+P"), self, self.imprimir)
 	#----------------------------------------------------------------------
 	def abrir(self,fich):
+		"""
+		Función encargada de mostrar el contenido del fichero indicado.
+		"""
 		if  fich.endswith(".enc"):
 			value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:",QLineEdit.Password)
 			if crear and value!='':
-				
+
 				x=self.drop.abrirFichero(fich)
 				try:
 					t=str(self.clave.decrypt(value,x),'cp1252')
@@ -79,7 +82,7 @@ class Lector(QMainWindow):
 	def imprimir(self):
 		"""
 		Función que imprime o convierte a PDF la nota abierta.
-		
+
 		"""
 		dialog = QtPrintSupport.QPrintDialog()
 
@@ -125,12 +128,15 @@ class Lector(QMainWindow):
 	def busqueda(self):
 		"""
 		Función que busca una cadena dentro de la nota.
-		
+
 		"""
 
 		self.editor.find(self.lineEdit.text())
 	#----------------------------------------------------------------------
 	def cambiarEncriptador(self):
+		"""
+		Función encargada de activar o desactivar la encriptación de la nota.
+		"""
 		if(self.encrip==False):
 			self.encrip=True
 			self.bEncrip.setIcon(self.cerrado)
@@ -167,8 +173,11 @@ class Lector(QMainWindow):
 			except ValueError:
 				QMessageBox.warning(self, "WARNING", "FALLO AL GUARDAR")
 		print(bcolors.WARNING+"Se ha guardado el fichero"+bcolors.ENDC)
-	#----------------------------------------------------------------------		
+	#----------------------------------------------------------------------
 	def nuevaE(self):
+		"""
+		Función que añade una nueva etiqueta a la nota.
+		"""
 		value,crear= QInputDialog.getText(self, "añadir etiqueta", "Nombre de la nueva etiqueta:")
 		if crear and value!='':
-			self.padre.anadir(self.fichero,"dx",value)	
+			self.padre.anadir(self.fichero,"dx",value)

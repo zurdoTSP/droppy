@@ -1,4 +1,7 @@
 class bcolors:
+    """
+    Clase encargada de dar colores al texto.
+    """
     morado = '\033[95m'
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'

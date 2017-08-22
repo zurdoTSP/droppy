@@ -60,6 +60,9 @@ class Lector(QMainWindow):
 		QShortcut(QtGui.QKeySequence("Ctrl+P"), self, self.imprimir)
 	#----------------------------------------------------------------------
 	def abrir(self,fich):
+		"""
+		Función encargada de mostrar el contenido del fichero indicado.
+		"""
 		if  fich.endswith(".enc"):
 			value,crear= QInputDialog.getText(self, "CONTRASEÑA", "Dame la contraseña con la que cifrarás el fichero:",QLineEdit.Password)
 			if crear and value!='':
@@ -133,6 +136,9 @@ class Lector(QMainWindow):
 		self.editor.find(self.lineEdit.text())
 	#----------------------------------------------------------------------
 	def cambiarEncriptador(self):
+		"""
+		Función encargada de activar o desactivar la encriptación de la nota.
+		"""
 		if(self.encrip==False):
 			self.encrip=True
 			self.bEncrip.setIcon(self.cerrado)
@@ -174,6 +180,9 @@ class Lector(QMainWindow):
 		print(bcolors.WARNING+"Se ha guardado el fichero"+bcolors.ENDC)
 	#----------------------------------------------------------------------
 	def nuevaE(self):
+		"""
+		Función que añade una nueva etiqueta a la nota.
+		"""
 		value,crear= QInputDialog.getText(self, "añadir etiqueta", "Nombre de la nueva etiqueta:")
 		if crear and value!='':
 			self.padre.anadir(self.fichero,"lc",value)

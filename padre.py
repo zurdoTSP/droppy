@@ -1,4 +1,4 @@
-######################################################################## 
+########################################################################
 class Padre:
 	"""Recipiente que recoge un fichero y su directorio padre"""
 	def __init__(self,nomb):
@@ -13,7 +13,7 @@ class Padre:
 
 		Parámetros:
 		nombre -- nueva dirección
-		
+
 		"""
 		self.__nombre=dir
 
@@ -23,8 +23,8 @@ class Padre:
 		Función que modifica el valor de la variable padre
 
 		Devuelve:
-		nombre 
-		
+		nombre
+
 		"""
 		return self.__nombre
 
@@ -32,14 +32,15 @@ class Padre:
 	def setHijo(self,x):
 		"""
 		Función que añade etiquetas al final
-		
+		Parámetros:
+		x -- nombre de la etiqueta.
 		"""
-		self.__hijo.append(x)		
-	#----------------------------------------------------------------------	
+		self.__hijo.append(x)
+	#----------------------------------------------------------------------
 	def getHijo(self):
 		"""
 		Función que devuelve las etiquetas
-		
+
 		"""
-		return self.__hijo	
-	#----------------------------------------------------------------------		
+		return self.__hijo
+	#----------------------------------------------------------------------

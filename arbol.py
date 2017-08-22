@@ -23,6 +23,7 @@ class Arbol(QMainWindow):
 		uic.loadUi("mainwindow2.ui",self)
 		self.carpetaActual=""
 		self.drop=dx
+		self.tlocal=local.Local()
 		self.setWindowTitle("Droppy")
 		self.localM=False
 		iconCar=QIcon(self.ruta+'New-Folder-icon.png')
@@ -62,11 +63,10 @@ class Arbol(QMainWindow):
 		self.boFichero=""
 		self.drop.buscar()
 		#Asociar botones a funciones
-		self.bCarpeta.clicked.connect(self.crearFolder)
+		self.bCarpeta.clicked.connect(self.crearCarpeta)
 		self.bDropb.clicked.connect(self.cambio)
 		self.bFichero.clicked.connect(self.crearFich)
 		self.bBorrar.clicked.connect(self.borrar)
-		QShortcut(QtGui.QKeySequence("Ctrl+B"), self, self.selectRuta)
 		self.lineEdit.returnPressed.connect(self.filtrar)
 		lectura=str(self.drop.abrirFichero("etiquetas.txt"),'cp1252')
 		self.control.leeYSepara(lectura)
@@ -118,7 +118,6 @@ class Arbol(QMainWindow):
 		"""
 		iconCar=QIcon(self.ruta+'home-iconL.png')
 		#self.directorio=self.drop.listarCarpetas()
-		self.tlocal=local.Local()
 		self.lista=self.tlocal.listar()
 		for x in self.lista:
 			item=QListWidgetItem(x.getNombre())
@@ -127,6 +126,15 @@ class Arbol(QMainWindow):
 
 	#----------------------------------------------------------------------
 	def buscar(self,cad):
+		"""
+		Función que busca la posición en la que se encuentra una carpeta en la lista de Dropbox.
+
+		Parámetros:
+		cad -- nombre de la carpeta.
+
+		Salida:
+		t -- Posición de la carpeta
+		"""
 		x=0
 		t=0
 		while(x<len(self.directorio)):
@@ -138,6 +146,15 @@ class Arbol(QMainWindow):
 		return t
 	#----------------------------------------------------------------------
 	def buscarl(self,cad):
+		"""
+		Función que busca la posición en la que se encuentra una carpeta en la lista de local.
+
+		Parámetros:
+		cad -- nombre de la carpeta.
+
+		Salida:
+		t -- Posición de la carpeta
+		"""
 		x=0
 		t=0
 		while(x<len(self.lista)):
@@ -181,18 +198,27 @@ class Arbol(QMainWindow):
 		#----------------------------------------------------------------------
 	def convertir(self,cad):
 		"""
-		Función que elimina el directorio de la cadena de los hijos
+		Función que elimina el directorio de la cadena de los hijos.
+
+		Parámetros:
+		cad --  variable a convertir.
+
+		Salida:
+		lista -- variable convertida.
 		"""
 		lista=cad.split('/')
-		return(lista[2])
-		print(x)
+		if(len(lista)>1):
+			return(lista[2])
+			print(x)
+		else:
+			return(lista[0])
 		def fname(arg):
 			pass
 #----------------------------------------------------------------------
 
-	def crearFolder(self):
+	def crearCarpeta(self):
 		"""
-		Función para crear carpetas en Dropbox.
+		Función para crear carpetas en Dropbox o local.
 		"""
 		value,crear= QInputDialog.getText(self, "crear archivo", "Nombre de la nueva carpeta:")
 		if crear and value!='':
@@ -215,6 +241,9 @@ class Arbol(QMainWindow):
 
 #----------------------------------------------------------------------
 	def crearFich(self):
+		"""
+		Función para crear un fichero dentro de una carpeta en Dropbox o local.
+		"""
 		iconCar=QIcon(self.ruta+'text-plain-icon.png')
 		if(self.carpetaActual!=""):
 			value,crear= QInputDialog.getText(self, "crear archivo", "Nombre del nuevo fichero:")
@@ -246,7 +275,7 @@ class Arbol(QMainWindow):
 
 	def borrar(self):
 		"""
-		Función para crear carpetas en Dropbox.
+		Función para borrar carpetas o ficheros en Dropbox o local.
 		"""
 		if self.localM==False:
 			if(self.boCarpeta!=""):
@@ -278,13 +307,19 @@ class Arbol(QMainWindow):
 					self.formaLocal()
 #----------------------------------------------------------------------
 	def borrarfich(self):
-			print(self.boCarpeta+" se anula y ")
-			self.boFichero=self.boCarpeta+"/"+self.ficheros.currentItem().text()
-			self.boCarpeta=""
-			print(self.boFichero)
+		"""
+		Función que modifica el valor de una variable para indicar que ese fichero sería borrado en caso de desearlo.
+		"""
+		print(self.boCarpeta+" se anula y ")
+		self.boFichero=self.boCarpeta+"/"+self.ficheros.currentItem().text()
+		self.boCarpeta=""
+		print(self.boFichero)
 
 #----------------------------------------------------------------------
 	def abrir(self):
+		"""
+		Función que abre en el editor la nota indicada en Dropbox o local.
+		"""
 		if self.localM==False:
 			x=self.ficheros.currentItem().text()
 			self.ventana2=fichero.Lector(self.drop,self.carpetaActual+"/"+x,self)
@@ -295,64 +330,121 @@ class Arbol(QMainWindow):
 			print(self.carpetaActual+x+" zurdinio")
 			self.ventana3=ficheroL.Lector(self.carpetaActual+"/"+x,self)
 			self.ventana3.show()
-	def ChildRemoved(self,event):
-		print("hola")
 
+	#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	def contextMenuEvent(self, event):
 		menu = QMenu(self)
 		quitAction = menu.addAction("Quit")
 		action = menu.exec_(self.mapToGlobal(event.pos()))
 		if action == quitAction:
 			qApp.quit()
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	def selectRuta(self):
-		file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-		print(file)
 
+	#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	def transformar(self,var):
+		"""
+		Función que adapta una cadena para que el programa funcione correctamente
+
+		Parámetros:
+		var --  variable a convertir.
+
+		Salida:
+		l -- variable convertida.
+		"""
 		t=var.split("/")
 		if(len(t)>2):
 			l=t[2]
 		else:
 			l=var[1:]
 		return l
+
 	def filtrar(self):
+		"""
+		Función que muestra las carpetas y ficheros que contienen la etiqueta indicada en el buscador.
+		También restablece los valores por defecto.
+		"""
 		lisca=[]
-		x=self.control.buscarL(self.lineEdit.text())
-		if(x==[]):
-			self.carpetas.clear()
-			self.ficheros.clear()
-			self.formaLocal()
+		if self.localM==True:
+			x=self.control.buscarL(self.lineEdit.text())
+			if(x==[]):
+				self.carpetas.clear()
+				self.ficheros.clear()
+				self.formaLocal()
+			else:
+				self.lista=[]
+				for i in x:
+					if(i.getPadre() in lisca):
+						for q in self.lista:
+							if(q.getNombre()==i.getPadre()):
+								q.setHijo("/"+i.getHijo())
+					else:
+						p=padre.Padre(i.getPadre())
+						print(i.getPadre())
+						p.setHijo("/"+i.getHijo())
+						self.lista.append(p)
+					lisca.append(i.getPadre())
+				self.carpetas.clear()
+				self.ficheros.clear()
+				iconCar=QIcon(self.ruta+'home-iconL.png')
+				for x in self.lista:
+					item=QListWidgetItem(x.getNombre())
+					item.setIcon(iconCar)
+					self.carpetas.addItem(item)
 		else:
-			self.lista=[]
-			for i in x:
-				if(i.getPadre() in lisca):
-					for q in self.lista:
-						if(q.getNombre()==i.getPadre()):
-							q.setHijo("/"+i.getHijo())
-				else:
-					p=padre.Padre(i.getPadre())
-					print(i.getPadre())
-					p.setHijo("/"+i.getHijo())
-					self.lista.append(p)
-				lisca.append(i.getPadre())
-			self.carpetas.clear()
-			self.ficheros.clear()
-			iconCar=QIcon(self.ruta+'home-iconL.png')
-			for x in self.lista:
-				item=QListWidgetItem(x.getNombre())
-				item.setIcon(iconCar)
-				self.carpetas.addItem(item)
+			iconCar=QIcon(self.ruta+'home-icon.png')
+			x=self.control.buscarD(self.lineEdit.text())
+			if(x==[]):
+				self.carpetas.clear()
+				self.ficheros.clear()
+				self.directorio=self.directorioP
+				for x in self.directorio:
+					item=QListWidgetItem(x.getNombre())
+					item.setIcon(iconCar)
+					self.carpetas.addItem(item)
+			else:
+				self.directorioP=self.directorio
+				self.directorio=[]
+				for i in x:
+					if(i.getPadre() in lisca):
+						for q in self.directorio:
+							if(q.getNombre()==i.getPadre()):
+								q.setHijo(i.getHijo())
+					else:
+						p=padre.Padre(i.getPadre())
+						print(i.getPadre())
+						p.setHijo(i.getHijo())
+						self.directorio.append(p)
+					lisca.append(i.getPadre())
+				self.carpetas.clear()
+				self.ficheros.clear()
+
+				for x in self.directorio:
+					item=QListWidgetItem(x.getNombre())
+					item.setIcon(iconCar)
+					self.carpetas.addItem(item)
+
 
 	def anadir(self,fich,tipo,nueva):
+		"""
+		Función que añade una etiqueta a un fichero.
+
+		Parámetros:
+		fich -- ruta del fichero.
+		tipo -- puede ser lc de local o dx de dropbox, indica a que lista debe añadirlo.
+		nueva -- la etiqueta que se va a añadir.
+
+		"""
 		if(tipo=="lc"):
 			self.control.nEtiquetaL(fich,nueva)
 		else:
 			self.control.nEtiquetaD(fich,nueva)
 		print(self.control.crearCadenaD())
-		
+
 
 	def closeEvent(self, event):
+		"""
+		Evento que se activa al cerrar la aplicación, en este caso guardará las etiquetas.
+
+		"""
 		x=self.control.crearCadenaL()
 		y=self.control.crearCadenaD()
 		self.drop.saveF(y,"etiquetas.txt")
