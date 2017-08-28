@@ -110,6 +110,7 @@ class Arbol(QMainWindow):
 			item=QListWidgetItem(x.getNombre())
 			item.setIcon(iconCar)
 			self.carpetas.addItem(item)
+		self.directorioP=self.directorio
 
 	#----------------------------------------------------------------------
 	def formaLocal(self):
@@ -392,7 +393,7 @@ class Arbol(QMainWindow):
 		else:
 			iconCar=QIcon(self.ruta+'home-icon.png')
 			x=self.control.buscarD(self.lineEdit.text())
-			if(x==[]):
+			if(self.lineEdit.text()==""):
 				self.carpetas.clear()
 				self.ficheros.clear()
 				self.directorio=self.directorioP
@@ -401,7 +402,6 @@ class Arbol(QMainWindow):
 					item.setIcon(iconCar)
 					self.carpetas.addItem(item)
 			else:
-				self.directorioP=self.directorio
 				self.directorio=[]
 				for i in x:
 					if(i.getPadre() in lisca):
