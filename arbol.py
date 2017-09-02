@@ -12,6 +12,7 @@ import ficheroL
 import local
 import controlInfo
 import padre
+import espera
 #Clase	heredada	de	QMainWindow	(Constructor	de	ventanas)
 class Arbol(QMainWindow):
 	#Método	constructor	de	la	clase
@@ -57,6 +58,7 @@ class Arbol(QMainWindow):
 		self.carpetas.itemClicked.connect(self.hijos)
 		self.ficheros.itemClicked.connect(self.borrarfich)
 		self.ficheros.itemDoubleClicked.connect(self.abrir)
+		self.prim=0
 		self.forma()
 		#self.formaLocal()
 		self.boCarpeta=""
@@ -82,7 +84,7 @@ class Arbol(QMainWindow):
 			self.bDropb.setIcon(self.iconDrop)
 			self.restablece()
 		else:
-			iconCar=QIcon(self.ruta+'home-icon.png')
+			iconCar=QIcon(self.ruta+'home-iconL.png')
 			self.bDropb.setIcon(iconCar)
 			self.localM=True
 			self.formaLocal()
@@ -105,12 +107,16 @@ class Arbol(QMainWindow):
 		Función que rellena la lista que contiene las carpetas de Dropbox
 		"""
 		iconCar=QIcon(self.ruta+'home-icon.png')
+		splash = QSplashScreen(QPixmap(self.ruta+'home-icon.png'))
+		splash.show()
+
 		self.directorio=self.drop.listarCarpetas()
+
 		for x in self.directorio:
 			item=QListWidgetItem(x.getNombre())
 			item.setIcon(iconCar)
 			self.carpetas.addItem(item)
-		self.directorioP=self.directorio
+		self.prim=1
 
 	#----------------------------------------------------------------------
 	def formaLocal(self):
@@ -173,6 +179,7 @@ class Arbol(QMainWindow):
 		"""
 		self.ficheros.clear()
 		iconCar=QIcon(self.ruta+'text-plain-icon.png')
+		iconCarE=QIcon(self.ruta+'text-plain-iconE.png')
 		if self.localM==False:
 			x=self.carpetas.currentItem().text()
 			self.carpetaActual=x
@@ -180,8 +187,12 @@ class Arbol(QMainWindow):
 			n=self.buscar(x)
 
 			for j in self.directorio[n].getHijo():
-				item=QListWidgetItem(self.convertir(j))
-				item.setIcon(iconCar)
+				nombre=self.convertir(j)
+				item=QListWidgetItem(nombre)
+				if nombre.endswith(".enc"):
+					item.setIcon(iconCarE)
+				else:
+					item.setIcon(iconCar)
 				self.ficheros.addItem(item)
 		else:
 			x=self.carpetas.currentItem().text()
@@ -193,7 +204,10 @@ class Arbol(QMainWindow):
 				for j in self.lista[n].getHijo():
 					i=self.transformar(j)
 					item=QListWidgetItem(i)
-					item.setIcon(iconCar)
+					if i.endswith(".enc"):
+						item.setIcon(iconCarE)
+					else:
+						item.setIcon(iconCar)
 					self.ficheros.addItem(item)
 
 		#----------------------------------------------------------------------
@@ -221,7 +235,7 @@ class Arbol(QMainWindow):
 		"""
 		Función para crear carpetas en Dropbox o local.
 		"""
-		value,crear= QInputDialog.getText(self, "crear archivo", "Nombre de la nueva carpeta:")
+		value,crear= QInputDialog.getText(self, "crear carpeta", "Nombre de la nueva carpeta:")
 		if crear and value!='':
 			if self.localM==False:
 				print('Nombre:', value)
@@ -247,7 +261,7 @@ class Arbol(QMainWindow):
 		"""
 		iconCar=QIcon(self.ruta+'text-plain-icon.png')
 		if(self.carpetaActual!=""):
-			value,crear= QInputDialog.getText(self, "crear archivo", "Nombre del nuevo fichero:")
+			value,crear= QInputDialog.getText(self, "crear nota", "Nombre de la nueva nota:")
 			if crear and value!='':
 				if not value.endswith(".writer"):
 					value=value+".writer"
@@ -393,7 +407,7 @@ class Arbol(QMainWindow):
 		else:
 			iconCar=QIcon(self.ruta+'home-icon.png')
 			x=self.control.buscarD(self.lineEdit.text())
-			if(self.lineEdit.text()==""):
+			if(x==[]):
 				self.carpetas.clear()
 				self.ficheros.clear()
 				self.directorio=self.directorioP
@@ -402,6 +416,7 @@ class Arbol(QMainWindow):
 					item.setIcon(iconCar)
 					self.carpetas.addItem(item)
 			else:
+				self.directorioP=self.directorio
 				self.directorio=[]
 				for i in x:
 					if(i.getPadre() in lisca):
